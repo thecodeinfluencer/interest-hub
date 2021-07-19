@@ -1,0 +1,52 @@
+{
+  "short_name": "iHub",
+  "name": "Interest Hub",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Messages",
+      "short_name": "Events",
+      "description": "View the church Events",
+      "url": "/messages",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "url": ".",
+  "manifestUrl": "manifest.json",
+  "lang": "en",
+  "scope": "/",
+  "description": "Connect with peers. Become more productive.",
+  "categories": ["social"]
+}

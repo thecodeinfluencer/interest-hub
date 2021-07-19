@@ -1,0 +1,15 @@
+:root {
+  --theme: #3849aa;
+}
+
+.Mui-selected {
+  color: var(--theme) !important;
+}
+
+.Mui-focused {
+  color: var(--theme) !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--theme) !important;
+}
