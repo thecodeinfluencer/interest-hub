@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import ListEmpty from './components/fragments/ListEmpty';
 import SelectInterests from './components/fragments/SelectInterests';
-import CreateGroupCard from './components/legacy/CreateGroupCard';
 import CreateEventScreen from './screens/CreateEventScreen';
 import CreateGroupScreen from './screens/CreateGroupScreen';
 import EditProfileScreen from './screens/EditProfileScreen';

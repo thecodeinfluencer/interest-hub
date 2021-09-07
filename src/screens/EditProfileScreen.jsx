@@ -70,7 +70,7 @@ export default function EditProfileScreen() {
         onSubmit={vals => {
           UpdateLocation
             ? console.log(register({ ...vals, location, interests }))
-            : console.log(register({ ...vals, interests }));
+            : dispatch(register({ ...vals, interests }));
         }}
         validationSchema={validate}
         initialValues={{
