@@ -61,6 +61,7 @@ export default function RegisterScreen() {
     dob: Yup.string().required().label('Date of Birth'),
     phoneNumber: Yup.string().required().label('Phone Number'),
     email: Yup.string().email().required().label('Email Address'),
+    bio: Yup.string().min(20).required().label('Bio'),
     password: Yup.string().required().label('Password'),
     password_confirmation: Yup.string().oneOf(
       [Yup.ref('password'), null],
@@ -113,6 +114,7 @@ export default function RegisterScreen() {
           dob: '',
           phoneNumber: '',
           email: '',
+          bio: '',
           password: '',
           password_confirmation: '',
         }}
@@ -123,6 +125,7 @@ export default function RegisterScreen() {
         <Input type='date' name='dob' placeholder='DOB' />
         <Input name='phoneNumber' placeholder='Phone Number' />
         <Input name='email' placeholder='Email Address' />
+        <Input multiline rows={3} name='bio' placeholder='About You' />
         <Input type='password' name='password' placeholder='Password' />
         <Input
           type='password'

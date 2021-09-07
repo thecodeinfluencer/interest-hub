@@ -2,6 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import ListEmpty from './components/fragments/ListEmpty';
 import SelectInterests from './components/fragments/SelectInterests';
+import CreateGroupCard from './components/legacy/CreateGroupCard';
+import CreateEventScreen from './screens/CreateEventScreen';
+import CreateGroupScreen from './screens/CreateGroupScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 import EventPeopleScreen from './screens/EventPeopleScreen';
 import EventRouteScreen from './screens/EventRouteScreen';
 import GroupChatReplyScreen from './screens/GroupChatReplyScreen';
@@ -32,6 +36,9 @@ export default function Routes() {
         {/* Screens */}
         <Route path='/slctintr' exact component={SelectInterests} />
         <Route path='/profile' exact component={ProfileScreen} />
+        <Route path='/profile/edit' exact component={EditProfileScreen} />
+        <Route path='/create/group' exact component={CreateGroupScreen} />
+        <Route path='/create/event' exact component={CreateEventScreen} />
 
         {/* Sub Routes */}
         <Route path='/people/:id' exact component={UserAccountScreen} />

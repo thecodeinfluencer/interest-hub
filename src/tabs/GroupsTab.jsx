@@ -1,5 +1,6 @@
 import React from 'react';
 import Screen from '../components/fragments/Screen';
+import CreateGroupCard from '../components/legacy/CreateGroupCard';
 import GroupCard from '../components/legacy/GroupCard';
 import { groups } from '../store/local/contents';
 import '../styles/grid.css';
@@ -21,6 +22,7 @@ export default function GroupsTab() {
           link='1234567'
         />
       ))}
+      <CreateGroupCard />
     </Screen>
   );
 }

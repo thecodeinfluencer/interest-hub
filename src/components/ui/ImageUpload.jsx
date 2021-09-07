@@ -2,11 +2,10 @@ import { Avatar, IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
-// import Screen from "../layout/Screen";
 import colors from '../../constants/Colors';
 import Button from './Button';
 
-export default function ProfileImageUpload({ name, placeholder, label, alt }) {
+export default function ImageUpload({ name, placeholder, variant, limit }) {
   const [imgArray, setImgArray] = useState([]);
 
   const { errors, setFieldTouched, touched, setFieldValue, setFieldError } =
@@ -14,7 +13,6 @@ export default function ProfileImageUpload({ name, placeholder, label, alt }) {
 
   useEffect(() => {
     name && setFieldValue(name, imgArray);
-    // placeholder && setImgArray([...imgArray, placeholder]);
     placeholder && (imgArray[0] = placeholder);
   }, [imgArray, name, setFieldValue, placeholder]);
 
@@ -37,11 +35,12 @@ export default function ProfileImageUpload({ name, placeholder, label, alt }) {
       <div style={{ display: 'flex' }}>
         {imgArray.map(item => {
           let isUrl = item.toString().search('http') === 0;
+
           return (
             <>
               <Avatar
-                alt={alt}
-                src={isUrl ? placeholder : window.URL.createObjectURL(item)}
+                variant={variant || 'circular'}
+                src={isUrl ? placeholder : window?.URL?.createObjectURL(item)}
                 style={{
                   width: 100,
                   height: 100,
@@ -52,7 +51,13 @@ export default function ProfileImageUpload({ name, placeholder, label, alt }) {
                   onClick={() => {
                     deleteImageUpload(item);
                   }}
-                  style={{ backgroundColor: colors.theme, color: '#fff' }}
+                  style={{
+                    backgroundColor: colors.theme,
+                    color: '#fff',
+                    alignSelf: 'baseline',
+                    marginLeft: -30,
+                    marginRight: 10,
+                  }}
                   size='small'
                 >
                   <Close />
@@ -63,7 +68,7 @@ export default function ProfileImageUpload({ name, placeholder, label, alt }) {
         })}
       </div>
 
-      {imgArray.length < (placeholder ? 2 : 4) && (
+      {imgArray.length < (limit ? limit : placeholder ? 2 : 4) && (
         <div style={{ position: 'relative' }}>
           <input
             onChange={() => {

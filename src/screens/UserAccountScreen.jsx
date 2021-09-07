@@ -64,10 +64,28 @@ function UserAccountScreen({ match }) {
           variant='h6'
           noWrap={true}
         >
-          Interests
+          About {firstName}
+        </Typography>
+      </Grid>
+      <Grid xs={12} item>
+        <Typography>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusamus
+          omnis harum modi eos non repellat dicta nobis quaerat voluptate rerum?
         </Typography>
       </Grid>
 
+      <Grid xs={12} item>
+        <Typography
+          style={{
+            marginTop: 20,
+            marginBottom: 10,
+          }}
+          variant='h6'
+          noWrap={true}
+        >
+          Interests
+        </Typography>
+      </Grid>
       <Grid xs={12} item>
         {interests &&
           interests.map(interest => (

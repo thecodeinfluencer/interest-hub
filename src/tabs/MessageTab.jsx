@@ -14,7 +14,6 @@ import { useHistory } from 'react-router';
 import ListEmpty from '../components/fragments/ListEmpty';
 import ListLoading from '../components/fragments/ListLoading';
 import Screen from '../components/fragments/Screen';
-import { loadForums } from '../store/actions/forumsActions';
 import {
   loadChatMessages,
   loadMessageList,
@@ -24,12 +23,10 @@ export default function MessageTab() {
   const dispatch = useDispatch();
   const history = useHistory();
   const state = useSelector(state => state);
-  const forums = state.forums.list;
   const messages = state.messages.chatlist;
-  const busy = state.forums.busy;
+  const busy = state.messages.busy;
 
   useEffect(() => {
-    dispatch(loadForums());
     dispatch(loadChatMessages());
     dispatch(loadMessageList());
   }, [dispatch]);
@@ -65,7 +62,7 @@ export default function MessageTab() {
                 </ListItem>
               )
             )}
-          {!busy && forums.length < 1 && <ListEmpty />}
+          {!busy && messages.length < 1 && <ListEmpty />}
           {busy && <ListLoading />}
         </List>
       </Grid>

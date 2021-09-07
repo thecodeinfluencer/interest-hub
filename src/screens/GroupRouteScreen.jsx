@@ -1,5 +1,5 @@
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
+import { AddRounded, InfoOutlined } from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
 import {
   GoogleMap,
@@ -216,16 +216,26 @@ export default function GroupRouteScreen() {
         </Grid>
 
         <Grid xs={12} item>
-          <Typography
+          <div
+            className='d-flex align-items-center justify-content-between'
             style={{
               marginTop: 20,
               marginBottom: 10,
             }}
-            variant='h6'
-            noWrap={true}
           >
-            Events
-          </Typography>
+            <Typography variant='h6' noWrap={true}>
+              Events
+            </Typography>
+            <Button
+              startIcon={<AddRounded />}
+              variant='outlined'
+              size='small'
+              title='Create Event'
+              onClick={() => {
+                history.push('/create/event');
+              }}
+            />
+          </div>
         </Grid>
         {[1, 2, 3, 4].map(() => (
           <EventCard

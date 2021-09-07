@@ -15,11 +15,13 @@ import { groups } from '../store/local/contents';
 
 import mapIcon from '../assets/pin0.svg';
 import mapIcon2 from '../assets/pin1.svg';
+import { useHistory } from 'react-router';
 
 function ProfileScreen() {
   // const [map, setMap] = useState(null);
   const state = useSelector(state => state);
   const dispatch = useDispatch();
+  const history = useHistory();
   const people = state.people.list;
   const { firstName, surname, email, location, photoURL, interests } = state
     .auth?.user?.firstName
@@ -70,7 +72,13 @@ function ProfileScreen() {
             </Typography>
             <Typography variant='body1'>{email}</Typography>
             <div style={{ display: 'flex' }}>
-              <Button style={{ marginRight: 10 }} title='Edit' />
+              <Button
+                onClick={() => {
+                  history.push('/profile/edit');
+                }}
+                style={{ marginRight: 10 }}
+                title='Edit'
+              />
               <Button
                 outlined
                 title='Logout'
@@ -90,10 +98,28 @@ function ProfileScreen() {
           variant='h6'
           noWrap={true}
         >
-          Interests
+          About You
+        </Typography>
+      </Grid>
+      <Grid xs={12} item>
+        <Typography>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusamus
+          omnis harum modi eos non repellat dicta nobis quaerat voluptate rerum?
         </Typography>
       </Grid>
 
+      <Grid xs={12} item>
+        <Typography
+          style={{
+            marginTop: 20,
+            marginBottom: 10,
+          }}
+          variant='h6'
+          noWrap={true}
+        >
+          Interests
+        </Typography>
+      </Grid>
       <Grid xs={12} item>
         {interests &&
           interests.map(interest => (
