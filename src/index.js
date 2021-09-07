@@ -9,6 +9,7 @@ import thunk from 'redux-thunk';
 import rootReducer from './store/reducers/rootReducer.js';
 import App from './App';
 import './styles/index.css';
+import './styles/boot.css';
 
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';

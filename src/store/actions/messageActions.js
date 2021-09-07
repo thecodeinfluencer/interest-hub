@@ -6,7 +6,7 @@ export const loadMessageList = () => {
       dispatch({ type: 'CHATS_BUSY', busy });
     };
 
-    const uid = getState().auth.user.uid;
+    const uid = getState().auth.user?.uid;
 
     setBusy(true);
 
@@ -48,7 +48,7 @@ export const loadMessageList = () => {
 };
 
 export const loadChatMessages = () => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const setBusy = busy => {
       dispatch({ type: 'CHATS_BUSY', busy });
     };
@@ -70,7 +70,7 @@ export const loadChatMessages = () => {
         }
 
         data.val() &&
-          uservalues?.map((value, index) => {
+          uservalues?.map(value => {
             messages.push(value);
 
             if (messages.length === length) {
@@ -87,7 +87,7 @@ export const loadChatMessages = () => {
 };
 
 export const updateMessageList = (sender, reciever) => {
-  return (dispatch, getState) => {
+  return () => {
     //add him to my list
     firebase
       .database()
@@ -103,7 +103,7 @@ export const updateMessageList = (sender, reciever) => {
 };
 
 export const sendMessage = (message, sender, reciever) => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const setBusy = busy => {
       dispatch({ type: 'CHATS_BUSY', busy });
     };

@@ -18,6 +18,7 @@ export default function GroupsTab() {
           )}/200/300`}
           name={name}
           key={`${Math.random() * 1000}`}
+          link='1234567'
         />
       ))}
     </Screen>

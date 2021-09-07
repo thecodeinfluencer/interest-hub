@@ -3,7 +3,7 @@ import firebase from '../../config/firebase';
 const db = firebase.firestore();
 
 export const loadForums = () => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const setBusy = busy => {
       dispatch({ type: 'FORUMS_BUSY', busy });
     };
@@ -25,7 +25,7 @@ export const loadForums = () => {
 };
 
 export const loadForumMessages = docRef => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const setBusy = busy => {
       dispatch({ type: 'FORUMS_BUSY', busy });
     };

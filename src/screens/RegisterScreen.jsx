@@ -169,7 +169,6 @@ export default function RegisterScreen() {
           ) : (
             <div>
               <Typography>Already have an account?</Typography>
-              <br />
               <Typography
                 onClick={() => {
                   history.push('/login');

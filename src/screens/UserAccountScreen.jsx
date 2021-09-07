@@ -2,7 +2,6 @@ import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import image from '../assets/food.jpg';
 import Screen from '../components/fragments/Screen';
 import Button from '../components/ui/Button';
 import { updateMessageList } from '../store/actions/messageActions';
@@ -14,8 +13,8 @@ function UserAccountScreen({ match }) {
   const dispatch = useDispatch();
   const user = state.auth.user;
   const people = state.people.list;
-  const [{ firstName, surname, email, location, uid, photoURL, interests }] =
-    people.filter(person => person.uid === match.params.id);
+  const [{ firstName, surname, email, uid, photoURL, interests }] =
+    people.filter(person => person?.uid === match.params.id);
 
   useEffect(() => {
     // dispatch(loadUserData());
@@ -29,7 +28,7 @@ function UserAccountScreen({ match }) {
             src={
               photoURL
                 ? photoURL
-                : `https://ui-avatars.com/api/?name=${firstName}+${surname}`
+                : `https://ui-avatars.com/api/?background=random&name=${firstName}+${surname}`
             }
             style={{
               width: 80,
@@ -47,7 +46,7 @@ function UserAccountScreen({ match }) {
                 outlined
                 title='Message'
                 onClick={() => {
-                  dispatch(updateMessageList(user.uid, uid));
+                  dispatch(updateMessageList(user?.uid, uid));
                   history.push(`/messages/${uid}`);
                 }}
               />

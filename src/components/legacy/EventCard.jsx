@@ -3,7 +3,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 // import image from '../../assets/food.jpg';
 
-export default function GroupCard({ name, image, link }) {
+export default function EventCard({ event, image, link, venue, date }) {
   const history = useHistory();
   return (
     <Grid xs={6} item>
@@ -12,7 +12,7 @@ export default function GroupCard({ name, image, link }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
-          height: 120,
+          height: 100,
           borderRadius: 4,
           padding: 8,
           backgroundImage: `url("${image}")`,
@@ -20,11 +20,14 @@ export default function GroupCard({ name, image, link }) {
           backgroundBlendMode: 'soft-light',
         }}
         onClick={() => {
-          link && history.push(`/groups/group1223433`);
+          link && history.push(`/groups/group1234/events/event1234`);
         }}
-      >
-        <Typography style={{ color: '#fff' }} variant='h6'>
-          {name ? name : 'Group Name Here'}
+      ></div>
+      <div className='my-1 mx-1'>
+        <Typography variant='body1'>{event}</Typography>
+        <Typography variant='body2'>{venue}</Typography>
+        <Typography color='textSecondary' variant='body2'>
+          {date}
         </Typography>
       </div>
     </Grid>

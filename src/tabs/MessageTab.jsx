@@ -55,7 +55,7 @@ export default function MessageTab() {
                       src={
                         photoURL
                           ? photoURL
-                          : `https://ui-avatars.com/api/?name=${firstName}+${surname}`
+                          : `https://ui-avatars.com/api/?background=random&name=${firstName}+${surname}`
                       }
                     >
                       <Person />

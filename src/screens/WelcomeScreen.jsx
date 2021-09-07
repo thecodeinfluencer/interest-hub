@@ -67,18 +67,6 @@ export default function WelcomeScreen() {
             onClick={() => history.push('/register')}
           />
         </div>
-        <div
-          style={{
-            width: '100%',
-          }}
-        >
-          <Typography color='primary' onClick={() => history.push('/terms')}>
-            Terms and conditions .{'  '}
-          </Typography>
-          <Typography color='primary' onClick={() => history.push('/privacy')}>
-            Privacy Policy
-          </Typography>
-        </div>
       </div>
     </div>
   );

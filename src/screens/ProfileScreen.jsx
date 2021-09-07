@@ -56,7 +56,7 @@ function ProfileScreen() {
             src={
               photoURL
                 ? photoURL
-                : `https://ui-avatars.com/api/?name=${firstName}+${surname}`
+                : `https://ui-avatars.com/api/?background=random&name=${firstName}+${surname}`
             }
             style={{
               width: 80,
@@ -121,10 +121,6 @@ function ProfileScreen() {
           Groups
         </Typography>
       </Grid>
-
-      {/* {[1, 2, 3, 4, 5, 6].map(() => (
-        <GroupCard key={`${Math.random() * 1000}`} />
-      ))} */}
 
       {groups.map(({ name }) => (
         <GroupCard

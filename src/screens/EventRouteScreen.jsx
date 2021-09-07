@@ -1,4 +1,4 @@
-import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
+import { Avatar, Grid, Typography } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
 import {
@@ -7,21 +7,18 @@ import {
   Marker,
   useJsApiLoader,
 } from '@react-google-maps/api';
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import mapIcon from '../assets/pin0.svg';
 import Screen from '../components/fragments/Screen';
-import EventCard from '../components/legacy/EventCard';
-import GroupChat from '../components/legacy/GroupChat';
 import Button from '../components/ui/Button';
 
-export default function GroupRouteScreen() {
+export default function EventRouteScreen() {
+  const [attending, setAttending] = useState(3);
   const state = useSelector(state => state);
   const history = useHistory();
-  const { location, interests } = state.auth?.user?.firstName
-    ? state.auth?.user
-    : {};
+  const { location } = state.auth?.user?.firstName ? state.auth?.user : {};
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -50,13 +47,21 @@ export default function GroupRouteScreen() {
           padding: 16,
         }}
         className='w-100'
-      >
-        <Typography variant='h5' style={{ color: '#fff', fontWeight: 'bold' }}>
-          Group Name
-        </Typography>
-      </div>
-      <Screen style={{ marginTop: -34 }} title='Group Info'>
+      ></div>
+      <Screen style={{ marginTop: -34 }} title='Event Info'>
         <Grid item xs={12}>
+          <Typography variant='h5' style={{ fontWeight: 'bold' }}>
+            The Nyeri Fest
+          </Typography>
+          <Typography variant='h6' style={{ fontWeight: 'bold' }}>
+            Wed 26 Oct, 2021
+          </Typography>
+          <Typography
+            variant='h6'
+            style={{ fontWeight: 'bold', marginBottom: 14 }}
+          >
+            2259 HRS
+          </Typography>
           <Typography color='textSecondary'>
             <InfoOutlined className='me-2' />
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. At,
@@ -74,72 +79,7 @@ export default function GroupRouteScreen() {
             variant='h6'
             noWrap={true}
           >
-            Interests
-          </Typography>
-        </Grid>
-        <Grid xs={12} item>
-          {interests &&
-            interests.map(interest => (
-              <Chip
-                key={`${Math.random() * 1000}`}
-                style={{
-                  marginRight: 6,
-                  marginBottom: 8,
-                }}
-                label={interest}
-                variant='outlined'
-                color='primary'
-              />
-            ))}
-        </Grid>
-
-        <Grid xs={12} item>
-          <Typography
-            style={{
-              marginTop: 20,
-              marginBottom: 10,
-            }}
-            variant='h6'
-            noWrap={true}
-          >
-            Members
-          </Typography>
-        </Grid>
-        <Grid xs={12} item>
-          <div className='d-flex justify-content-between'>
-            <div>
-              <AvatarGroup max={4}>
-                <Avatar alt='Remy Sharp' src='/static/images/avatar/1.jpg' />
-                <Avatar alt='Travis Howard' src='/static/images/avatar/2.jpg' />
-                <Avatar alt='Cindy Baker' src='/static/images/avatar/3.jpg' />
-                <Avatar alt='Agnes Walker' src='/static/images/avatar/4.jpg' />
-                <Avatar
-                  alt='Trevor Henderson'
-                  src='/static/images/avatar/5.jpg'
-                />
-              </AvatarGroup>
-            </div>
-            <Button
-              onClick={() => {
-                history.push('/groups/group1234/members');
-              }}
-              outlined
-              title='More Members'
-              size='small'
-            />
-          </div>
-        </Grid>
-
-        <Grid xs={12} item>
-          <Typography
-            style={{
-              marginTop: 20,
-              marginBottom: 10,
-            }}
-            variant='h6'
-            noWrap={true}
-          >
-            Location
+            Location Guide
           </Typography>
         </Grid>
         <Grid xs={12} item>
@@ -188,28 +128,29 @@ export default function GroupRouteScreen() {
             variant='h6'
             noWrap={true}
           >
-            Chats
+            Attending
           </Typography>
         </Grid>
         <Grid xs={12} item>
-          {interests &&
-            [1, 2].map(() => (
-              <GroupChat
-                key={`${Math.random() * 1000}`}
-                name='Mark Aloo'
-                time='2 days ago'
-                content='lorem ipsum dolor sit amet constrecteur'
-                preview
-              />
-            ))}
           <div className='d-flex justify-content-between'>
-            <div />
+            <div>
+              <AvatarGroup max={4}>
+                <Avatar alt='Remy Sharp' src='/static/images/avatar/1.jpg' />
+                <Avatar alt='Travis Howard' src='/static/images/avatar/2.jpg' />
+                <Avatar alt='Cindy Baker' src='/static/images/avatar/3.jpg' />
+                <Avatar alt='Agnes Walker' src='/static/images/avatar/4.jpg' />
+                <Avatar
+                  alt='Trevor Henderson'
+                  src='/static/images/avatar/5.jpg'
+                />
+              </AvatarGroup>
+            </div>
             <Button
               onClick={() => {
-                history.push('/groups/group1234/chats');
+                history.push('/groups/group1234/events/event1234/people');
               }}
               outlined
-              title='More Chats'
+              title='More people'
               size='small'
             />
           </div>
@@ -224,22 +165,39 @@ export default function GroupRouteScreen() {
             variant='h6'
             noWrap={true}
           >
-            Events
+            Are you attending?
           </Typography>
         </Grid>
-        {[1, 2, 3, 4].map(() => (
-          <EventCard
-            image={`https://picsum.photos/id/${Math.floor(
-              Math.random() * 200
-            )}/200/300`}
-            event='Nyeri Drag Race'
-            venue='Nyeri Sports Ground'
-            date='26th Nov 2021'
-            time='1030'
-            key={`${Math.random() * 1000}`}
-            link='1234567'
-          />
-        ))}
+        <Grid xs={12} item>
+          <div className='d-flex justify-content-betwee'>
+            <Button
+              onClick={() => {
+                setAttending(1);
+              }}
+              className='me-2'
+              outlined={attending != 1}
+              title='Yes'
+              size='small'
+            />
+            <Button
+              onClick={() => {
+                setAttending(0);
+              }}
+              className='me-2'
+              outlined={attending != 0}
+              title='No'
+              size='small'
+            />
+            <Button
+              onClick={() => {
+                setAttending(2);
+              }}
+              outlined={attending != 2}
+              title='Maybe'
+              size='small'
+            />
+          </div>
+        </Grid>
       </Screen>
     </>
   );

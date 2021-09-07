@@ -4,7 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { ArrowBack, NotificationsRounded } from '@material-ui/icons';
+import { ArrowBack } from '@material-ui/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function KanisaHeader({ title, tab, authPass }) {
+export default function AppHeader({ title, tab, authPass }) {
   const state = useSelector(state => state);
   const classes = useStyles();
   const history = useHistory();
@@ -75,7 +75,7 @@ export default function KanisaHeader({ title, tab, authPass }) {
           </Typography>
           {!authPass && (
             <div>
-              <IconButton
+              {/* <IconButton
                 aria-label='account of current user'
                 aria-controls='menu-appbar'
                 aria-haspopup='true'
@@ -83,7 +83,7 @@ export default function KanisaHeader({ title, tab, authPass }) {
                 color='inherit'
               >
                 <NotificationsRounded />
-              </IconButton>
+              </IconButton> */}
 
               <IconButton
                 aria-label='account of current user'
@@ -101,7 +101,7 @@ export default function KanisaHeader({ title, tab, authPass }) {
                   src={
                     user?.photoURL
                       ? user?.photoURL
-                      : `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.surname}`
+                      : `https://ui-avatars.com/api/?background=random&name=${user?.firstName}+${user?.surname}`
                   }
                   style={{
                     height: 32,

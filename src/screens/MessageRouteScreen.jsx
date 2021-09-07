@@ -41,9 +41,9 @@ export default function MessageRouteScreen({ match }) {
       surname,
     },
   ] =
-    state.messages.chatlist?.filter(chat => chat.uid === match.params.id)
+    state.messages.chatlist?.filter(chat => chat?.uid === match.params.id)
       .length > 0
-      ? state.messages.chatlist?.filter(chat => chat.uid === match.params.id)
+      ? state.messages.chatlist?.filter(chat => chat?.uid === match.params.id)
       : [{ displayName: 'Start Chat...' }];
 
   let activeChatID = match.params.id.toString();
@@ -51,8 +51,8 @@ export default function MessageRouteScreen({ match }) {
   const chats = activeChatID
     ? state.messages.list.filter(
         message =>
-          (message.sender === activeChatID && message.reciever === user.uid) ||
-          (message.sender === user.uid && message.reciever === activeChatID)
+          (message.sender === activeChatID && message.reciever === user?.uid) ||
+          (message.sender === user?.uid && message.reciever === activeChatID)
       )
     : [];
 
@@ -91,7 +91,7 @@ export default function MessageRouteScreen({ match }) {
                       src={
                         activeChatPhotoURL
                           ? activeChatPhotoURL
-                          : `https://ui-avatars.com/api/?name=${firstName}+${surname}`
+                          : `https://ui-avatars.com/api/?background=random&name=${firstName}+${surname}`
                       }
                     />
                   )}
@@ -146,7 +146,7 @@ export default function MessageRouteScreen({ match }) {
         <div style={{}}>
           <IconButton
             onClick={() => {
-              dispatch(sendMessage(text, user.uid, activeChatID));
+              dispatch(sendMessage(text, user?.uid, activeChatID));
               setText('');
             }}
             disabled={text.length < 3}

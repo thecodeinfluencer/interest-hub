@@ -5,7 +5,7 @@ import { Environment } from '../local/contents';
 const baseUrl = Environment.apiUrl;
 
 export const login = ({ email, password }) => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const setBusy = busy => {
       dispatch({ type: 'LOGIN_BUSY', busy });
     };
@@ -22,10 +22,10 @@ export const login = ({ email, password }) => {
         firebase
           .firestore()
           .collection('users')
-          .doc(`${data.user.uid}`)
+          .doc(`${data.user?.uid}`)
           .onSnapshot(snap => {
-            let user = snap.data();
-            let token = user.uid;
+            let user = snap?.data();
+            let token = user?.uid;
             dispatch({ type: 'USER_LOGIN', user });
             dispatch({ type: 'USER_LOGIN_TOKEN', token });
             console.log('loginnn: ', user);
@@ -65,7 +65,7 @@ export const loadUserData = () => {
 };
 
 export const register = values => {
-  return (dispatch, getState) => {
+  return dispatch => {
     let {
       firstName,
       surname,
@@ -96,7 +96,7 @@ export const register = values => {
         firebase
           .firestore()
           .collection('users')
-          .doc(`${data.user.uid}`)
+          .doc(`${data.user?.uid}`)
           .set({
             ...data.user.providerData[0],
             displayName: firstName + ' ' + surname,
@@ -107,7 +107,7 @@ export const register = values => {
             location,
             phoneNumber,
             interests,
-            uid: data.user.uid,
+            uid: data.user?.uid,
           })
           .then(() => {
             dispatch({ type: 'USER_REGISTER' });
@@ -128,7 +128,7 @@ export const register = values => {
 };
 
 export const requestCode = vals => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const body = {
       ...vals,
     };
@@ -162,7 +162,7 @@ export const requestCode = vals => {
 };
 
 export const createPassword = vals => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const body = {
       ...vals,
       device_name: 'Device',
@@ -284,7 +284,7 @@ export const changeAvatar = ({ image }) => {
 };
 
 export const logout = () => {
-  return (dispatch, getState) => {
+  return dispatch => {
     const setBusy = busy => {
       dispatch({ type: 'LOGIN_BUSY', busy });
     };

@@ -14,7 +14,7 @@ import {
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import KanisaHeader from '../ui/KanisaHeader';
+import AppHeader from '../ui/AppHeader';
 
 const tabs = [
   { id: 0, label: 'Home', icon: <Home />, link: '/' },
@@ -66,7 +66,7 @@ export default function Screen({ style, children, title, tab, authPass }) {
           ...style,
         }}
       >
-        <KanisaHeader tab={tab} title={title} authPass={authPass} />
+        <AppHeader tab={tab} title={title} authPass={authPass} />
         <Grid className={classes.screen} spacing={1} container>
           {children}
         </Grid>
