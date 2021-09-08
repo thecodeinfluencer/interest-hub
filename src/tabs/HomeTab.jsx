@@ -6,8 +6,6 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  makeStyles,
-  Typography,
 } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,57 +18,7 @@ import {
 } from '../store/actions/messageActions';
 import { loadPeople } from '../store/actions/peopleActions';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-  },
-  gridList: {
-    flexWrap: 'nowrap',
-    transform: 'translateZ(0)',
-    width: '100%',
-  },
-  gridListTile: {
-    borderRadius: 10,
-    padding: 0,
-    margin: 0,
-    '& .MuiGridListTile-tile': {
-      borderRadius: 4,
-    },
-  },
-  title: {
-    color: '#fff',
-  },
-  titleBar: {
-    background: 'rgba(0,0,0,.6)',
-  },
-  event: {
-    display: 'flex',
-    marginBottom: 10,
-  },
-  cover: {
-    width: 151,
-  },
-  details: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  content: {
-    flex: '1 0 auto',
-  },
-  sectionHeader: {
-    textTransform: 'uppercase',
-    fontSize: '1rem',
-    marginTop: 20,
-    marginBottom: 10,
-    fontWeight: 'bold',
-  },
-}));
-
 export default function HomeTab() {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
   const state = useSelector(state => state);

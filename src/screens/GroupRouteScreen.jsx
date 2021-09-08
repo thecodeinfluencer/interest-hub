@@ -1,9 +1,5 @@
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
-import {
-  AddRounded,
-  ContactSupportOutlined,
-  InfoOutlined,
-} from '@material-ui/icons';
+import { AddRounded, InfoOutlined } from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
 import {
   GoogleMap,
@@ -13,8 +9,7 @@ import {
 } from '@react-google-maps/api';
 import moment from 'moment';
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import mapIcon from '../assets/pin0.svg';
 import Screen from '../components/fragments/Screen';
