@@ -7,18 +7,24 @@ import {
   Marker,
   useJsApiLoader,
 } from '@react-google-maps/api';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router';
 import mapIcon from '../assets/pin0.svg';
 import Screen from '../components/fragments/Screen';
 import Button from '../components/ui/Button';
+import { loadEventAttendeesList } from '../store/actions/eventActions';
 
 export default function EventRouteScreen() {
   const [attending, setAttending] = useState(3);
   const state = useSelector(state => state);
+  const dispatch = useDispatch();
   const history = useHistory();
-  const { location } = state.auth?.user?.firstName ? state.auth?.user : {};
+  const params = useParams();
+
+  const { name, bio, location, photoURL, date, attendees } =
+    state.events.list.filter(({ id }) => id == params.eventId)[0];
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -29,14 +35,17 @@ export default function EventRouteScreen() {
     const bounds = new window.google.maps.LatLngBounds();
     console.log(bounds);
     map.fitBounds(bounds);
-    // setMap(map);
   }, []);
+
+  useEffect(() => {
+    dispatch(loadEventAttendeesList(params.eventId));
+  }, [params.eventId]);
 
   return (
     <>
       <div
         style={{
-          backgroundImage: `url(${'https://picsum.photos/id/324/300'})`,
+          backgroundImage: `url(${photoURL})`,
           backgroundSize: 'cover',
           backgroundColor: 'rgba(0,0,0,.7)',
           backgroundBlendMode: 'soft-light',
@@ -51,22 +60,21 @@ export default function EventRouteScreen() {
       <Screen style={{ marginTop: -34 }} title='Event Info'>
         <Grid item xs={12}>
           <Typography variant='h5' style={{ fontWeight: 'bold' }}>
-            The Nyeri Fest
+            {name}
           </Typography>
           <Typography variant='h6' style={{ fontWeight: 'bold' }}>
-            Wed 26 Oct, 2021
+            {moment(parseInt(date)).format('ddd')}{' '}
+            {moment(parseInt(date)).format('LL')}
           </Typography>
           <Typography
             variant='h6'
             style={{ fontWeight: 'bold', marginBottom: 14 }}
           >
-            2259 HRS
+            {moment(parseInt(date)).format('LT')}
           </Typography>
           <Typography color='textSecondary'>
             <InfoOutlined className='me-2' />
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. At,
-            magnam. Delectus pariatur voluptatum provident, dolore nam explicabo
-            molestiae amet? Libero.
+            {bio}
           </Typography>
         </Grid>
 
@@ -135,19 +143,19 @@ export default function EventRouteScreen() {
           <div className='d-flex justify-content-between'>
             <div>
               <AvatarGroup max={4}>
-                <Avatar alt='Remy Sharp' src='/static/images/avatar/1.jpg' />
-                <Avatar alt='Travis Howard' src='/static/images/avatar/2.jpg' />
-                <Avatar alt='Cindy Baker' src='/static/images/avatar/3.jpg' />
-                <Avatar alt='Agnes Walker' src='/static/images/avatar/4.jpg' />
-                <Avatar
-                  alt='Trevor Henderson'
-                  src='/static/images/avatar/5.jpg'
-                />
+                {attendees?.map(({ uid, displayName, photoURL }) => (
+                  <Avatar key={uid} alt={displayName} src={photoURL} />
+                ))}
               </AvatarGroup>
             </div>
             <Button
               onClick={() => {
-                history.push('/groups/group1234/events/event1234/people');
+                history.push({
+                  pathname: `/groups/${params.id}/events/${params.eventId}/people`,
+                  state: {
+                    attendees,
+                  },
+                });
               }}
               outlined
               title='More people'

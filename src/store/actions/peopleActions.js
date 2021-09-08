@@ -5,7 +5,7 @@ const db = firebase.firestore();
 export const loadPeople = () => {
   return dispatch => {
     const setBusy = busy => {
-      dispatch({ type: 'USERS_PEOPLE', busy });
+      dispatch({ type: 'PEOPLE_BUSY', busy });
     };
 
     setBusy(true);

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import firebase from '../../config/firebase';
+import { getRandomColor } from '../../methods';
 import { Environment } from '../local/contents';
 
 const baseUrl = Environment.apiUrl;
@@ -107,6 +108,7 @@ export const register = values => {
             location,
             phoneNumber,
             interests,
+            photoURL: `https://ui-avatars.com/api/?name=${firstName}+${surname}&background=${getRandomColor()}`,
             uid: data.user?.uid,
           })
           .then(() => {

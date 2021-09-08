@@ -84,7 +84,7 @@ export default function HomeTab() {
   }, [dispatch]);
 
   return (
-    <Screen tab>
+    <Screen tab title='People Nearby' style={{ marginTop: 16 }}>
       {/* <Grid item xs={12}>
         <Typography className={classes.sectionHeader} variant='h6'>
           Your Groups
@@ -126,11 +126,11 @@ export default function HomeTab() {
           </GridList>
         </div>
       </Grid> */}
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Typography className={classes.sectionHeader} variant='h6'>
           Nearby People
         </Typography>
-      </Grid>
+      </Grid> */}
       <Grid item xs={12}>
         <List style={{ margin: 0, padding: 0 }}>
           {people.map(person => (
@@ -144,15 +144,7 @@ export default function HomeTab() {
               onClick={() => history.push(`/people/${person?.uid}`)}
             >
               <ListItemAvatar>
-                <Avatar
-                  src={
-                    person?.photoURL
-                      ? person?.photoURL
-                      : `https://ui-avatars.com/api/?name=${person?.firstName}+${person?.surname}&background=random`
-                  }
-                >
-                  {getInitials(person)}
-                </Avatar>
+                <Avatar src={person?.photoURL}>{getInitials(person)}</Avatar>
               </ListItemAvatar>
               <ListItemText
                 primary={person?.displayName}

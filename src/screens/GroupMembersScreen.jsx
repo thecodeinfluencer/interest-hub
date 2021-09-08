@@ -9,18 +9,21 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 import Screen from '../components/fragments/Screen';
 import { distance, formatDistance, getInitials } from '../methods';
 
 export default function GroupMembersScreen() {
   const state = useSelector(state => state);
   const user = state.auth.user;
+  const history = useHistory();
+  const members = history.location.state.members;
 
   return (
     <Screen style={{ marginTop: 16 }} title='Group Members'>
       <Grid item xs={12}>
         <List style={{ margin: 0, padding: 0 }}>
-          {[1, 2, 3, 4].map(person => (
+          {members?.map(person => (
             <ListItem
               style={{
                 marginBottom: 10,
@@ -31,15 +34,7 @@ export default function GroupMembersScreen() {
               onClick={() => history.push(`/people/${person?.uid}`)}
             >
               <ListItemAvatar>
-                <Avatar
-                  src={
-                    person?.photoURL
-                      ? person?.photoURL
-                      : `https://ui-avatars.com/api/?name=${person?.firstName}+${person?.surname}&background=random`
-                  }
-                >
-                  {getInitials(person)}
-                </Avatar>
+                <Avatar src={person?.photoURL}>{getInitials(person)}</Avatar>
               </ListItemAvatar>
               <ListItemText
                 primary={person?.displayName}

@@ -20,7 +20,7 @@ export default function GroupCard({ name, image, link }) {
           backgroundBlendMode: 'soft-light',
         }}
         onClick={() => {
-          link && history.push(`/groups/group1223433`);
+          link && history.push(`/groups/${link}`);
         }}
       >
         <Typography style={{ color: '#fff' }} variant='h6'>

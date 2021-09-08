@@ -52,18 +52,18 @@ export default function Routes() {
         />
         {/*  */}
         <Route
-          path='/groups/:id/chats/:id'
+          path='/groups/:id/chats/:chatId'
           exact
           component={GroupChatReplyScreen}
         />
         <Route
-          path='/groups/:id/events/:id'
+          path='/groups/:id/events/:eventId'
           exact
           component={EventRouteScreen}
         />
         {/*  */}
         <Route
-          path='/groups/:id/events/:id/people'
+          path='/groups/:id/events/:eventId/people'
           exact
           component={EventPeopleScreen}
         />

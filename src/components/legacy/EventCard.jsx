@@ -20,7 +20,7 @@ export default function EventCard({ event, image, link, venue, date }) {
           backgroundBlendMode: 'soft-light',
         }}
         onClick={() => {
-          link && history.push(`/groups/group1234/events/event1234`);
+          link && history.push(link);
         }}
       ></div>
       <div className='my-1 mx-1'>

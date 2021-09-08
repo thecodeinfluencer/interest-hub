@@ -1,5 +1,9 @@
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
-import { AddRounded, InfoOutlined } from '@material-ui/icons';
+import {
+  AddRounded,
+  ContactSupportOutlined,
+  InfoOutlined,
+} from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
 import {
   GoogleMap,
@@ -7,21 +11,34 @@ import {
   Marker,
   useJsApiLoader,
 } from '@react-google-maps/api';
-import React from 'react';
+import moment from 'moment';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import mapIcon from '../assets/pin0.svg';
 import Screen from '../components/fragments/Screen';
 import EventCard from '../components/legacy/EventCard';
 import GroupChat from '../components/legacy/GroupChat';
 import Button from '../components/ui/Button';
+import { loadEvents } from '../store/actions/eventActions';
+import {
+  loadGroupMembersList,
+  loadGroupMessagesList,
+} from '../store/actions/groupActions';
 
 export default function GroupRouteScreen() {
   const state = useSelector(state => state);
+  const dispatch = useDispatch();
   const history = useHistory();
-  const { location, interests } = state.auth?.user?.firstName
-    ? state.auth?.user
-    : {};
+  const params = useParams();
+
+  const { name, interests, bio, location, photoURL, members, messages } =
+    state.groups.list.filter(({ id }) => id == params.id)[0];
+
+  const events = state.events.list;
+
+  console.log(events);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -32,14 +49,21 @@ export default function GroupRouteScreen() {
     const bounds = new window.google.maps.LatLngBounds();
     console.log(bounds);
     map.fitBounds(bounds);
-    // setMap(map);
   }, []);
+
+  useEffect(() => {
+    dispatch(loadGroupMembersList(params.id));
+    dispatch(loadGroupMessagesList(params.id));
+    dispatch(loadEvents());
+  }, [params]);
+
+  console.log(state.groups.list.filter(({ id }) => id == params.id)[0]);
 
   return (
     <>
       <div
         style={{
-          backgroundImage: `url(${'https://picsum.photos/id/324/300'})`,
+          backgroundImage: `url(${photoURL})`,
           backgroundSize: 'cover',
           backgroundColor: 'rgba(0,0,0,.7)',
           backgroundBlendMode: 'soft-light',
@@ -52,16 +76,14 @@ export default function GroupRouteScreen() {
         className='w-100'
       >
         <Typography variant='h5' style={{ color: '#fff', fontWeight: 'bold' }}>
-          Group Name
+          {name}
         </Typography>
       </div>
       <Screen style={{ marginTop: -34 }} title='Group Info'>
         <Grid item xs={12}>
           <Typography color='textSecondary'>
             <InfoOutlined className='me-2' />
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. At,
-            magnam. Delectus pariatur voluptatum provident, dolore nam explicabo
-            molestiae amet? Libero.
+            {bio}
           </Typography>
         </Grid>
 
@@ -74,7 +96,7 @@ export default function GroupRouteScreen() {
             variant='h6'
             noWrap={true}
           >
-            Interests
+            Group Tags
           </Typography>
         </Grid>
         <Grid xs={12} item>
@@ -109,22 +131,22 @@ export default function GroupRouteScreen() {
           <div className='d-flex justify-content-between'>
             <div>
               <AvatarGroup max={4}>
-                <Avatar alt='Remy Sharp' src='/static/images/avatar/1.jpg' />
-                <Avatar alt='Travis Howard' src='/static/images/avatar/2.jpg' />
-                <Avatar alt='Cindy Baker' src='/static/images/avatar/3.jpg' />
-                <Avatar alt='Agnes Walker' src='/static/images/avatar/4.jpg' />
-                <Avatar
-                  alt='Trevor Henderson'
-                  src='/static/images/avatar/5.jpg'
-                />
+                {members?.map(({ uid, displayName, photoURL }) => (
+                  <Avatar key={uid} alt={displayName} src={photoURL} />
+                ))}
               </AvatarGroup>
             </div>
             <Button
               onClick={() => {
-                history.push('/groups/group1234/members');
+                history.push({
+                  pathname: `/groups/${params.id}/members`,
+                  state: {
+                    members,
+                  },
+                });
               }}
               outlined
-              title='More Members'
+              title='Show List'
               size='small'
             />
           </div>
@@ -172,48 +194,56 @@ export default function GroupRouteScreen() {
                     lng: parseFloat(location?.longitude),
                   }}
                 >
-                  <div>Event Location</div>
+                  <div>Group Location</div>
                 </InfoWindow>
               </Marker>
             </GoogleMap>
           )}
         </Grid>
 
-        <Grid xs={12} item>
-          <Typography
-            style={{
-              marginTop: 20,
-              marginBottom: 10,
-            }}
-            variant='h6'
-            noWrap={true}
-          >
-            Chats
-          </Typography>
-        </Grid>
-        <Grid xs={12} item>
-          {interests &&
-            [1, 2].map(() => (
-              <GroupChat
-                key={`${Math.random() * 1000}`}
-                name='Mark Aloo'
-                time='2 days ago'
-                content='lorem ipsum dolor sit amet constrecteur'
-                preview
-              />
-            ))}
-          <div className='d-flex justify-content-between'>
-            <div />
-            <Button
-              onClick={() => {
-                history.push('/groups/group1234/chats');
-              }}
-              outlined
-              title='More Chats'
-              size='small'
-            />
-          </div>
-        </Grid>
+        {messages && (
+          <>
+            <Grid xs={12} item>
+              <Typography
+                style={{
+                  marginTop: 20,
+                  marginBottom: 10,
+                }}
+                variant='h6'
+                noWrap={true}
+              >
+                Chats
+              </Typography>
+            </Grid>
+            <Grid xs={12} item>
+              {messages
+                ?.slice(0, 2)
+                .filter(({ reply_to }) => reply_to == false)
+                .map(({ id, sender, date, message }) => (
+                  <GroupChat
+                    id={id}
+                    key={id}
+                    sender={sender}
+                    time={moment(date).fromNow()}
+                    content={message}
+                    replies={messages.filter(({ reply_to }) => reply_to == id)}
+                    preview
+                  />
+                ))}
+              <div className='d-flex justify-content-between'>
+                <div />
+                <Button
+                  onClick={() => {
+                    history.push(`/groups/${params.id}/chats`);
+                  }}
+                  outlined
+                  title='More Chats'
+                  size='small'
+                />
+              </div>
+            </Grid>
+          </>
+        )}
 
         <Grid xs={12} item>
           <div
@@ -237,17 +267,14 @@ export default function GroupRouteScreen() {
             />
           </div>
         </Grid>
-        {[1, 2, 3, 4].map(() => (
+        {events.map(({ id, name, date, photoURL, venue }) => (
           <EventCard
-            image={`https://picsum.photos/id/${Math.floor(
-              Math.random() * 200
-            )}/200/300`}
-            event='Nyeri Drag Race'
-            venue='Nyeri Sports Ground'
-            date='26th Nov 2021'
-            time='1030'
-            key={`${Math.random() * 1000}`}
-            link='1234567'
+            image={photoURL}
+            event={name}
+            venue={venue}
+            date={moment(parseInt(date)).format('LL')}
+            key={id}
+            link={`/groups/${params.id}/events/${id}`}
           />
         ))}
       </Screen>

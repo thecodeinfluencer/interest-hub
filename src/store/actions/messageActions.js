@@ -12,7 +12,7 @@ export const loadMessageList = () => {
 
     firebase
       .database()
-      .ref(`message-list/${uid}`)
+      .ref(`message_list/${uid}`)
       .on('value', data => {
         let chatlist = [];
         let length = data.numChildren();
@@ -91,13 +91,13 @@ export const updateMessageList = (sender, reciever) => {
     //add him to my list
     firebase
       .database()
-      .ref(`message-list/${sender}/${reciever}`)
+      .ref(`message_list/${sender}/${reciever}`)
       .set({ id: reciever });
 
     //add me to his list
     firebase
       .database()
-      .ref(`message-list/${reciever}/${sender}`)
+      .ref(`message_list/${reciever}/${sender}`)
       .set({ id: sender });
   };
 };
