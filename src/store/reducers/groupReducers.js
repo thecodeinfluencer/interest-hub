@@ -44,6 +44,10 @@ export default function groupsReducer(state = initialState, action) {
 
       return { ...state, list: list, err: null };
     }
+    case 'CREATE_GROUP':
+      return { ...state, err: null };
+    case 'CREATE_GROUP_ERR':
+      return { ...state, err: action.err };
     case 'LOAD_GROUPS_ERROR':
       return { ...state, list: [], err: action.err };
     default:

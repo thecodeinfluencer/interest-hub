@@ -6,15 +6,22 @@ import colors from '../../constants/Colors';
 import Button from './Button';
 
 export default function ImageUpload({ name, placeholder, variant, limit }) {
-  const [imgArray, setImgArray] = useState([]);
+  const {
+    errors,
+    setFieldTouched,
+    touched,
+    setFieldValue,
+    setFieldError,
+    values,
+  } = useFormikContext();
 
-  const { errors, setFieldTouched, touched, setFieldValue, setFieldError } =
-    useFormikContext();
+  const [imgArray, setImgArray] = useState(values[name]);
 
   useEffect(() => {
     name && setFieldValue(name, imgArray);
+    values[name] == [] && setImgArray([]);
     placeholder && (imgArray[0] = placeholder);
-  }, [imgArray, name, setFieldValue, placeholder]);
+  }, [imgArray, name, setFieldValue, placeholder, values[name]]);
 
   const deleteImageUpload = item => {
     let newArray = [...imgArray];
@@ -32,13 +39,16 @@ export default function ImageUpload({ name, placeholder, variant, limit }) {
 
   return (
     <>
+      {/* {JSON.stringify(imgArray)}
+      {JSON.stringify(values[name])} */}
       <div style={{ display: 'flex' }}>
-        {imgArray.map(item => {
+        {imgArray?.map(item => {
           let isUrl = item.toString().search('http') === 0;
 
           return (
             <>
               <Avatar
+                key={Math.random() * 1000}
                 variant={variant || 'circular'}
                 src={isUrl ? placeholder : window?.URL?.createObjectURL(item)}
                 style={{
@@ -76,6 +86,7 @@ export default function ImageUpload({ name, placeholder, variant, limit }) {
               let filetype = path
                 .substring(path.lastIndexOf('.') + 1)
                 .toLowerCase();
+
               if (
                 filetype === 'jpg' ||
                 filetype === 'png' ||

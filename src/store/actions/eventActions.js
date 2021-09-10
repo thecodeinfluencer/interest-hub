@@ -1,6 +1,7 @@
 import firebase from '../../config/firebase';
 
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 export const loadEvents = () => {
   return dispatch => {
@@ -74,6 +75,60 @@ export const loadEventAttendeesList = eventID => {
               }
             })
         );
+      });
+  };
+};
+
+export const createEvent = vals => {
+  return dispatch => {
+    const setBusy = busy => {
+      dispatch({ type: 'GROUPS_BUSY', busy });
+    };
+
+    setBusy(true);
+
+    const dbGroupID = Date.now();
+
+    const group = {
+      ...vals,
+      id: dbGroupID,
+    };
+
+    delete group.image;
+
+    storage
+      .ref(`/groups/profiles/${dbGroupID}.png`)
+      .put(vals.image[0])
+      .then(data => {
+        data.ref
+          .getDownloadURL()
+          .then(photoURL => {
+            db.collection('groups')
+              .doc(`${dbGroupID}`)
+              .set({
+                ...group,
+                photoURL,
+              })
+              .then(() => {
+                dispatch({ type: 'CREATE_GROUP' });
+                setBusy(false);
+              })
+              .catch(err => {
+                dispatch({ type: 'CREATE_GROUP_ERR', err });
+                console.log('create err: ', err);
+                setBusy(false);
+              });
+          })
+          .catch(err => {
+            dispatch({ type: 'CREATE_GROUP_ERR', err });
+            console.log('upload err: ', err);
+            setBusy(false);
+          });
+      })
+      .catch(err => {
+        dispatch({ type: 'CREATE_GROUP_ERR', err });
+        console.log('upload err: ', err);
+        setBusy(false);
       });
   };
 };

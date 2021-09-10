@@ -1,5 +1,5 @@
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
-import { AddRounded, InfoOutlined } from '@material-ui/icons';
+import { AddRounded, ChevronRight, InfoOutlined } from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
 import {
   GoogleMap,
@@ -231,8 +231,9 @@ export default function GroupRouteScreen() {
                   onClick={() => {
                     history.push(`/groups/${params.id}/chats`);
                   }}
+                  endIcon={<ChevronRight />}
                   outlined
-                  title='More Chats'
+                  title={messages.length ? 'More Chats' : 'Start Chat'}
                   size='small'
                 />
               </div>

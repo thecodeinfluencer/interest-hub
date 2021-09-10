@@ -1,3 +1,10 @@
+import {
+  Card,
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
+} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,17 +16,21 @@ import Button from '../components/ui/Button';
 import ImageUpload from '../components/ui/ImageUpload';
 import Input from '../components/ui/Input';
 import Form from '../components/utilities/Form';
-import { register } from '../store/actions/authActions';
+import { createGroup } from '../store/actions/groupActions';
+import { cities } from '../store/local/cities';
 
 export default function CreateGroupScreen() {
+  const state = useSelector(state => state);
+
   const [location, setLocation] = useState(null);
-  const [interests, setinterests] = useState([]);
+  const [city, setCity] = useState('');
+  const [interests, setInterests] = useState([]);
+  const [localErr, setLocalErr] = useState(state.groups.err);
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const state = useSelector(state => state);
-  const error = state.auth.err;
-  const busy = state.auth.busy;
+  const error = state.groups.err || localErr;
+  const busy = state.groups.busy;
 
   function getLocation() {
     if (navigator.geolocation) {
@@ -41,7 +52,7 @@ export default function CreateGroupScreen() {
   const validate = Yup.object().shape({
     name: Yup.string().required().label('Group Name'),
     bio: Yup.string().min(25).required().label('Group Bio'),
-    image: Yup.string().required().label('Group Image'),
+    image: Yup.array().required().label('Group Image'),
   });
 
   return (
@@ -57,34 +68,81 @@ export default function CreateGroupScreen() {
         </Alert>
       )}
       <Form
-        onSubmit={vals => {
-          // console.log({ ...vals, interests });
-          dispatch(register({ ...vals, location, interests }));
+        onSubmit={(vals, { resetForm }) => {
+          if (!vals.image.length) {
+            setLocalErr({ message: 'Select an image' });
+            return;
+          }
+
+          if (interests.length < 2) {
+            setLocalErr({ message: 'Select at least two tags' });
+            return;
+          }
+
+          setLocalErr(null);
+          dispatch(createGroup({ ...vals, location, interests }));
+
+          setTimeout(() => {
+            if (!error) {
+              resetForm();
+              setInterests([]);
+              history.goBack();
+            }
+          }, 1000);
         }}
         validationSchema={validate}
         initialValues={{
           name: '',
           bio: '',
-          image: '',
+          image: [],
         }}
       >
         <Input name='name' placeholder='Group Name' />
         <Input multiline rows={3} name='bio' placeholder='Group Bio' />
+
+        <TextField
+          className='py-2'
+          value={city}
+          onChange={event => setCity(event.target.value)}
+          variant='outlined'
+          fullWidth
+          placeholder='Search Nearest City'
+        />
+
+        <div className='w-100 py-2'>
+          {city.length > 1 && (
+            <Card variant='outlined'>
+              <List>
+                {cities
+                  .filter(
+                    ({ name, country, subcountry }) =>
+                      name?.toLowerCase().includes(city.toLowerCase()) ||
+                      country?.toLowerCase().includes(city.toLowerCase()) ||
+                      subcountry?.toLowerCase().includes(city.toLowerCase())
+                  )
+                  .slice(0, 5)
+                  .map(({ name, country }) => (
+                    <ListItem key={name}>
+                      <ListItemText primary={`  ${name}, ${country}`} />
+                    </ListItem>
+                  ))}
+              </List>
+            </Card>
+          )}
+        </div>
 
         <ImageUpload limit={1} name='image' variant='rounded' />
 
         <SelectInterests
           title='Select Group Tags'
           onSelect={interests => {
-            setinterests(interests);
+            setInterests(interests);
           }}
         />
 
-        <br />
-        <br />
         {error && (
           <>
-            <Alert icon={false} severity='error'>
+            <Alert className='w-100 mb-2' icon={false} severity='error'>
               {error?.message}
             </Alert>
             <br />

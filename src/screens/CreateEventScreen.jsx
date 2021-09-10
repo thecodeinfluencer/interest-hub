@@ -9,32 +9,22 @@ import ImageUpload from '../components/ui/ImageUpload';
 import Input from '../components/ui/Input';
 import Form from '../components/utilities/Form';
 import { register } from '../store/actions/authActions';
+import { createEvent } from '../store/actions/eventActions';
 
 export default function CreateEventScreen() {
-  const [location, setLocation] = useState(null);
+  const state = useSelector(state => state);
+
+  const [localErr, setLocalErr] = useState(state.groups.err);
+  const [city, setCity] = useState('');
+  const [search, setSearch] = useState('');
+  const [interests, setInterests] = useState([]);
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const state = useSelector(state => state);
-  const error = state.auth.err;
-  const busy = state.auth.busy;
+  const error = state.events.err;
+  const busy = state.events.busy;
 
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        setLocation({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        });
-      });
-    } else {
-      alert('Geolocation is not supported by this browser.');
-    }
-  }
-
-  useEffect(() => {
-    getLocation();
-  }, [history, state.auth.user]);
+  useEffect(() => {}, [history, state.auth.user]);
 
   const validate = Yup.object().shape({
     name: Yup.string().required().label('Event Name'),
@@ -51,15 +41,28 @@ export default function CreateEventScreen() {
       }}
       title='Create Event'
     >
-      {!location && (
-        <Alert style={{ marginBottom: 20 }} icon={false} severity='warning'>
-          You need to enable location access to proceed
-        </Alert>
-      )}
       <Form
-        onSubmit={vals => {
-          // console.log({ ...vals, interests });
-          dispatch(register({ ...vals, location }));
+        onSubmit={(vals, { resetForm }) => {
+          if (!vals.image.length) {
+            setLocalErr({ message: 'Select an image' });
+            return;
+          }
+
+          if (interests.length < 2) {
+            setLocalErr({ message: 'Select at least two tags' });
+            return;
+          }
+
+          setLocalErr(null);
+          dispatch(createEvent({ ...vals, interests }));
+
+          setTimeout(() => {
+            if (!error) {
+              resetForm();
+              setInterests([]);
+              history.goBack();
+            }
+          }, 1000);
         }}
         validationSchema={validate}
         initialValues={{
@@ -67,7 +70,7 @@ export default function CreateEventScreen() {
           bio: '',
           date: '',
           time: '',
-          image: '',
+          image: [],
         }}
       >
         <Input name='name' placeholder='Event Name' />
@@ -90,7 +93,7 @@ export default function CreateEventScreen() {
 
         <div className='d-flex justify-content-between align-items-center w-100'>
           <div></div>
-          <Button disabled={busy || !location} title='Create' submit />
+          <Button disabled={busy} title='Create' submit />
         </div>
       </Form>
     </Screen>

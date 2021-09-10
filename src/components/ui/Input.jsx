@@ -11,13 +11,13 @@ export default function Input({
   name,
   label,
   placeholder,
-  defaultValue,
   adornment,
   adornmentType,
   type,
   ...defaultProps
 }) {
-  const { handleChange, errors, setFieldTouched, touched } = useFormikContext();
+  const { handleChange, errors, setFieldTouched, touched, values } =
+    useFormikContext();
 
   return (
     <FormControl
@@ -25,7 +25,6 @@ export default function Input({
       variant='outlined'
       color='primary'
       style={{ marginTop: 8, marginBottom: 8 }}
-      // size="medium"
     >
       <InputLabel
         style={{ backgroundColor: '#fff', paddingLeft: 4, paddingRight: 4 }}
@@ -33,12 +32,11 @@ export default function Input({
         {label ? label : placeholder}
       </InputLabel>
       <OutlinedInput
-        error={name && touched[name] && errors[name]}
-        defaultValue={defaultValue ? defaultValue : null}
+        value={values[name]}
+        error={name && touched[name] && errors[name] && true}
         // label={label}
         placeholder={placeholder}
         // helpertext={name && touched[name] && errors[name] ? errors[name] : null}
-        helpertext='Works'
         onChange={name && handleChange(name)}
         onBlur={() => name && setFieldTouched(name)}
         type={type}
