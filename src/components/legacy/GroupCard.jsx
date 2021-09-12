@@ -16,6 +16,7 @@ export default function GroupCard({ name, image, link }) {
           borderRadius: 4,
           padding: 8,
           backgroundImage: `url("${image}")`,
+          backgroundSize: 'cover',
           backgroundColor: 'rgba(0,0,0,.7)',
           backgroundBlendMode: 'soft-light',
         }}

@@ -1,37 +1,37 @@
 import Alert from '@material-ui/lab/Alert';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import * as Yup from 'yup';
 import Screen from '../components/fragments/Screen';
+import SearchInput from '../components/fragments/SearchInput';
+import SelectInterests from '../components/fragments/SelectInterests';
 import Button from '../components/ui/Button';
 import ImageUpload from '../components/ui/ImageUpload';
 import Input from '../components/ui/Input';
 import Form from '../components/utilities/Form';
-import { register } from '../store/actions/authActions';
 import { createEvent } from '../store/actions/eventActions';
+import cities2 from '../store/local/worldcities.json';
 
 export default function CreateEventScreen() {
   const state = useSelector(state => state);
 
-  const [localErr, setLocalErr] = useState(state.groups.err);
-  const [city, setCity] = useState('');
-  const [search, setSearch] = useState('');
+  const [localErr, setLocalErr] = useState(state.events.err);
+  const [city, setCity] = useState({});
+  const [location, setLocation] = useState('');
   const [interests, setInterests] = useState([]);
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const error = state.events.err;
+  const error = state.events.err || localErr;
   const busy = state.events.busy;
-
-  useEffect(() => {}, [history, state.auth.user]);
 
   const validate = Yup.object().shape({
     name: Yup.string().required().label('Event Name'),
     bio: Yup.string().min(25).required().label('Event Bio'),
     date: Yup.string().required().label('Event Date'),
     time: Yup.string().required().label('Event Time'),
-    image: Yup.string().required().label('Event Image'),
+    image: Yup.array().required().label('Event Image'),
   });
 
   return (
@@ -53,8 +53,13 @@ export default function CreateEventScreen() {
             return;
           }
 
+          if (!location) {
+            setLocalErr({ message: 'Select a nearest place to continue' });
+            return;
+          }
+
           setLocalErr(null);
-          dispatch(createEvent({ ...vals, interests }));
+          dispatch(createEvent({ ...vals, location, interests, city }));
 
           setTimeout(() => {
             if (!error) {
@@ -78,7 +83,24 @@ export default function CreateEventScreen() {
         <Input type='time' name='time' placeholder='Event Time' />
         <Input multiline rows={3} name='bio' placeholder='Event Bio' />
 
+        <SearchInput
+          data={cities2}
+          onSelect={city => {
+            setCity(city);
+            setLocation({
+              latitude: city?.lat,
+              longitude: city?.lng,
+            });
+          }}
+        />
         <ImageUpload limit={1} name='image' variant='rounded' />
+
+        <SelectInterests
+          title='Select Event Tags'
+          onSelect={interests => {
+            setInterests(interests);
+          }}
+        />
 
         <br />
         <br />

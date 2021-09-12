@@ -17,13 +17,16 @@ import Button from '../components/ui/Button';
 import { loadEventAttendeesList } from '../store/actions/eventActions';
 
 export default function EventRouteScreen() {
-  const [attending, setAttending] = useState(3);
   const state = useSelector(state => state);
+  const user = state.auth.user;
+
+  const [attending, setAttending] = useState(3);
+
   const dispatch = useDispatch();
   const history = useHistory();
   const params = useParams();
 
-  const { name, bio, location, photoURL, date, attendees } =
+  const { name, bio, location, photoURL, date, time, attendees } =
     state.events.list.filter(({ id }) => id == params.eventId)[0];
 
   const { isLoaded } = useJsApiLoader({
@@ -39,7 +42,13 @@ export default function EventRouteScreen() {
 
   useEffect(() => {
     dispatch(loadEventAttendeesList(params.eventId));
-  }, [params.eventId]);
+
+    if (attendees?.filter(at => at.uid == user.uid).length > 0) {
+      attendees?.filter(at => at.uid == user.uid)[0]?.surety == 'yes'
+        ? setAttending(1)
+        : setAttending(2);
+    }
+  }, [params.eventId, attendees, user]);
 
   return (
     <>
@@ -63,14 +72,13 @@ export default function EventRouteScreen() {
             {name}
           </Typography>
           <Typography variant='h6' style={{ fontWeight: 'bold' }}>
-            {moment(parseInt(date)).format('ddd')}{' '}
-            {moment(parseInt(date)).format('LL')}
+            {moment(date).format('dddd MMMM DD, YYYY')}
           </Typography>
           <Typography
             variant='h6'
             style={{ fontWeight: 'bold', marginBottom: 14 }}
           >
-            {moment(parseInt(date)).format('LT')}
+            {time}
           </Typography>
           <Typography color='textSecondary'>
             <InfoOutlined className='me-2' />

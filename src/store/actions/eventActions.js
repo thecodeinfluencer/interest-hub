@@ -1,6 +1,7 @@
 import firebase from '../../config/firebase';
 
-const db = firebase.firestore();
+const fdb = firebase.firestore();
+const rdb = firebase.database();
 const storage = firebase.storage();
 
 export const loadEvents = () => {
@@ -13,7 +14,7 @@ export const loadEvents = () => {
 
     const info = [];
 
-    db.collection('events').onSnapshot(snap => {
+    fdb.collection('events').onSnapshot(snap => {
       snap.docs.forEach(doc => {
         info.push(doc.data());
         if (info.length === snap.docs.length) {
@@ -80,53 +81,64 @@ export const loadEventAttendeesList = eventID => {
 };
 
 export const createEvent = vals => {
-  return dispatch => {
+  return (dispatch, getState) => {
     const setBusy = busy => {
-      dispatch({ type: 'GROUPS_BUSY', busy });
+      dispatch({ type: 'EVENTS_BUSY', busy });
     };
 
     setBusy(true);
 
-    const dbGroupID = Date.now();
+    const dbEventID = Date.now();
 
-    const group = {
+    const event = {
       ...vals,
-      id: dbGroupID,
+      id: dbEventID,
     };
 
-    delete group.image;
+    delete event.image;
 
     storage
-      .ref(`/groups/profiles/${dbGroupID}.png`)
+      .ref(`/events/banners/${dbEventID}.png`)
       .put(vals.image[0])
       .then(data => {
         data.ref
           .getDownloadURL()
           .then(photoURL => {
-            db.collection('groups')
-              .doc(`${dbGroupID}`)
+            fdb
+              .collection('events')
+              .doc(`${dbEventID}`)
               .set({
-                ...group,
+                ...event,
                 photoURL,
               })
               .then(() => {
-                dispatch({ type: 'CREATE_GROUP' });
-                setBusy(false);
+                rdb
+                  .ref(
+                    `event_attendees/${dbEventID}/${getState().auth?.user?.uid}`
+                  )
+                  .set({ id: getState().auth?.user?.uid, surety: 'yes' })
+                  .then(() => {
+                    dispatch({ type: 'CREATE_EVENT' });
+                    setBusy(false);
+                  })
+                  .catch(err => {
+                    dispatch({ type: 'CREATE_EVENT_ERR', err });
+                    setBusy(false);
+                  });
               })
               .catch(err => {
-                dispatch({ type: 'CREATE_GROUP_ERR', err });
-                console.log('create err: ', err);
+                dispatch({ type: 'CREATE_EVENT_ERR', err });
                 setBusy(false);
               });
           })
           .catch(err => {
-            dispatch({ type: 'CREATE_GROUP_ERR', err });
+            dispatch({ type: 'CREATE_EVENT_ERR', err });
             console.log('upload err: ', err);
             setBusy(false);
           });
       })
       .catch(err => {
-        dispatch({ type: 'CREATE_GROUP_ERR', err });
+        dispatch({ type: 'CREATE_EVENT_ERR', err });
         console.log('upload err: ', err);
         setBusy(false);
       });

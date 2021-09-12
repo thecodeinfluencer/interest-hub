@@ -1,14 +1,19 @@
 import { Avatar, Divider, Grid, Typography } from '@material-ui/core';
 import moment from 'moment';
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
+import ChatInput from '../components/fragments/ChatInput';
 import Screen from '../components/fragments/Screen';
 import GroupChat from '../components/legacy/GroupChat';
+import { sendGroupMessage } from '../store/actions/groupActions';
 
 export default function GroupChatReplyScreen() {
   const state = useSelector(state => state);
   const params = useParams();
+  const [text, setText] = useState();
+
+  const dispatch = useDispatch();
 
   const { messages } = state.groups.list.filter(({ id }) => id == params.id)[0];
 
@@ -61,6 +66,14 @@ export default function GroupChatReplyScreen() {
             />
           ))}
       </Grid>
+      <ChatInput
+        value={text}
+        onChange={e => setText(e.target.value)}
+        onSend={() => {
+          dispatch(sendGroupMessage(params.id, text, params.chatId));
+          setText('');
+        }}
+      />
     </Screen>
   );
 }

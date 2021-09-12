@@ -1,8 +1,7 @@
-import { Avatar, Grid, IconButton, makeStyles } from '@material-ui/core';
-import { Send } from '@material-ui/icons';
+import { Avatar, Grid, makeStyles } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
+import ChatInput from '../components/fragments/ChatInput';
 import Screen from '../components/fragments/Screen';
 import colors from '../constants/Colors';
 import { sendMessage } from '../store/actions/messageActions';
@@ -115,46 +114,14 @@ export default function MessageRouteScreen({ match }) {
             })}
         </Grid>
       </Screen>
-      <div
-        style={{
-          position: 'fixed',
-          display: 'flex',
-          alignItems: 'center',
-          bottom: 0,
-          width: '100%',
-          minHeight: '20px',
-          boxSizing: 'border-box',
-          padding: '8px 11px',
-          backgroundColor: '#fff',
-          borderTop: '2px solid #ddd',
+      <ChatInput
+        value={text}
+        onChange={e => setText(e.target.value)}
+        onSend={() => {
+          dispatch(sendMessage(text, user?.uid, activeChatID));
+          setText('');
         }}
-      >
-        <input
-          style={{
-            border: 'none',
-            flex: 1,
-            outline: 'none',
-            ':focus': {
-              outline: 'none',
-            },
-          }}
-          value={text}
-          onChange={e => setText(e.target.value)}
-          type='text'
-          placeholder='Type a message'
-        />
-        <div style={{}}>
-          <IconButton
-            onClick={() => {
-              dispatch(sendMessage(text, user?.uid, activeChatID));
-              setText('');
-            }}
-            disabled={text.length < 3}
-          >
-            <Send />
-          </IconButton>
-        </div>
-      </div>
+      />
     </>
   );
 }

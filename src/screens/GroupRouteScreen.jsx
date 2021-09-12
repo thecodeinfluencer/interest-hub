@@ -62,6 +62,7 @@ export default function GroupRouteScreen() {
           backgroundSize: 'cover',
           backgroundColor: 'rgba(0,0,0,.7)',
           backgroundBlendMode: 'soft-light',
+          backgroundOrigin: 'content-box',
           marginTop: 56,
           height: 200,
           display: 'flex',
@@ -263,14 +264,11 @@ export default function GroupRouteScreen() {
             />
           </div>
         </Grid>
-        {events.map(({ id, name, date, photoURL, venue }) => (
+        {events.map(event => (
           <EventCard
-            image={photoURL}
-            event={name}
-            venue={venue}
-            date={moment(parseInt(date)).format('LL')}
-            key={id}
-            link={`/groups/${params.id}/events/${id}`}
+            event={event}
+            key={event.id}
+            link={`/groups/${params.id}/events/${event.id}`}
           />
         ))}
       </Screen>

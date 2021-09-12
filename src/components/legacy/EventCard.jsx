@@ -1,10 +1,13 @@
 import { Grid, Typography } from '@material-ui/core';
+import moment from 'moment';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 // import image from '../../assets/food.jpg';
 
-export default function EventCard({ event, image, link, venue, date }) {
+export default function EventCard({ event, link }) {
   const history = useHistory();
+  const { name, photoURL, date, city } = event;
+
   return (
     <Grid xs={6} item>
       <div
@@ -15,7 +18,8 @@ export default function EventCard({ event, image, link, venue, date }) {
           height: 100,
           borderRadius: 4,
           padding: 8,
-          backgroundImage: `url("${image}")`,
+          backgroundImage: `url("${photoURL}")`,
+          backgroundSize: 'cover',
           backgroundColor: 'rgba(0,0,0,.7)',
           backgroundBlendMode: 'soft-light',
         }}
@@ -24,10 +28,10 @@ export default function EventCard({ event, image, link, venue, date }) {
         }}
       ></div>
       <div className='my-1 mx-1'>
-        <Typography variant='body1'>{event}</Typography>
-        <Typography variant='body2'>{venue}</Typography>
+        <Typography variant='body1'>{name}</Typography>
+        <Typography variant='body2'>{city?.city}</Typography>
         <Typography color='textSecondary' variant='body2'>
-          {date}
+          {moment(date).format('dddd, MMMM DD')}
         </Typography>
       </div>
     </Grid>

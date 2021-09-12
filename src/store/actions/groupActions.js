@@ -1,6 +1,7 @@
 import firebase from '../../config/firebase';
 
-const db = firebase.firestore();
+const fdb = firebase.firestore();
+const rdb = firebase.database();
 const storage = firebase.storage();
 
 export const loadGroups = () => {
@@ -13,7 +14,7 @@ export const loadGroups = () => {
 
     const info = [];
 
-    db.collection('groups').onSnapshot(snap => {
+    fdb.collection('groups').onSnapshot(snap => {
       snap.docs.forEach(doc => {
         info.push(doc.data());
         if (info.length === snap.docs.length) {
@@ -128,7 +129,7 @@ export const loadGroupMessagesList = groupID => {
 };
 
 export const createGroup = vals => {
-  return dispatch => {
+  return (dispatch, getState) => {
     const setBusy = busy => {
       dispatch({ type: 'GROUPS_BUSY', busy });
     };
@@ -151,15 +152,28 @@ export const createGroup = vals => {
         data.ref
           .getDownloadURL()
           .then(photoURL => {
-            db.collection('groups')
+            fdb
+              .collection('groups')
               .doc(`${dbGroupID}`)
               .set({
                 ...group,
                 photoURL,
               })
               .then(() => {
-                dispatch({ type: 'CREATE_GROUP' });
-                setBusy(false);
+                rdb
+                  .ref(
+                    `group_members/${dbGroupID}/${getState().auth?.user?.uid}`
+                  )
+                  .set({ id: getState().auth?.user?.uid })
+                  .then(() => {
+                    dispatch({ type: 'CREATE_GROUP' });
+                    setBusy(false);
+                  })
+                  .catch(err => {
+                    dispatch({ type: 'CREATE_GROUP_ERR', err });
+                    console.log('create err: ', err);
+                    setBusy(false);
+                  });
               })
               .catch(err => {
                 dispatch({ type: 'CREATE_GROUP_ERR', err });
@@ -176,6 +190,35 @@ export const createGroup = vals => {
       .catch(err => {
         dispatch({ type: 'CREATE_GROUP_ERR', err });
         console.log('upload err: ', err);
+        setBusy(false);
+      });
+  };
+};
+
+export const sendGroupMessage = (groupID, message, reply_to) => {
+  return (dispatch, getState) => {
+    const setBusy = busy => {
+      dispatch({ type: 'GROUPS_BUSY', busy });
+    };
+
+    setBusy(true);
+    const date = Date.now();
+
+    rdb
+      .ref(`group_messages/${groupID}/${date}`)
+      .set({
+        sender: getState().auth?.user?.uid,
+        date,
+        id: date,
+        reply_to: reply_to || false,
+        message,
+      })
+      .then(() => {
+        dispatch({ type: 'SEND_GROUP_MESSAGE' });
+        setBusy(false);
+      })
+      .catch(err => {
+        dispatch({ type: 'CREATE_GROUP_ERR', err });
         setBusy(false);
       });
   };
