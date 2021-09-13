@@ -19,9 +19,8 @@ export default function ImageUpload({ name, placeholder, variant, limit }) {
 
   useEffect(() => {
     name && setFieldValue(name, imgArray);
-    values[name] == [] && setImgArray([]);
     placeholder && (imgArray[0] = placeholder);
-  }, [imgArray, name, setFieldValue, placeholder, values[name]]);
+  }, [touched, name, placeholder, values[name]]);
 
   const deleteImageUpload = item => {
     let newArray = [...imgArray];

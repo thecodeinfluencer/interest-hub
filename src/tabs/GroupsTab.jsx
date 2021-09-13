@@ -8,15 +8,20 @@ import GroupCard from '../components/legacy/GroupCard';
 import { loadGroups } from '../store/actions/groupActions';
 import '../styles/grid.css';
 
+function removeDuplicates(data, key) {
+  return [...new Map(data.map(item => [key(item), item])).values()];
+}
+
 export default function GroupsTab() {
   const dispatch = useDispatch();
   const state = useSelector(st => st);
-  const groups = state.groups.list;
+
+  const groups = removeDuplicates(state.groups.list, item => item.id);
   const loading = state.groups.busy;
 
   useEffect(() => {
     dispatch(loadGroups());
-  }, []);
+  }, [dispatch]);
 
   return (
     <Screen

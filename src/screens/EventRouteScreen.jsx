@@ -1,12 +1,7 @@
 import { Avatar, Grid, Typography } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
-import {
-  GoogleMap,
-  InfoWindow,
-  Marker,
-  useJsApiLoader,
-} from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +9,11 @@ import { useHistory, useParams } from 'react-router';
 import mapIcon from '../assets/pin0.svg';
 import Screen from '../components/fragments/Screen';
 import Button from '../components/ui/Button';
-import { loadEventAttendeesList } from '../store/actions/eventActions';
+import {
+  addAttendeeToEvent,
+  loadEventAttendeesList,
+  removeAttendeeFromEvent,
+} from '../store/actions/eventActions';
 
 export default function EventRouteScreen() {
   const state = useSelector(state => state);
@@ -48,7 +47,7 @@ export default function EventRouteScreen() {
         ? setAttending(1)
         : setAttending(2);
     }
-  }, [params.eventId, attendees, user]);
+  }, [params.eventId]);
 
   return (
     <>
@@ -121,16 +120,7 @@ export default function EventRouteScreen() {
                   lng: parseFloat(location?.longitude),
                 }}
                 zIndex={2}
-              >
-                <InfoWindow
-                  position={{
-                    lat: parseFloat(location?.latitude),
-                    lng: parseFloat(location?.longitude),
-                  }}
-                >
-                  <div>Event Location</div>
-                </InfoWindow>
-              </Marker>
+              ></Marker>
             </GoogleMap>
           )}
         </Grid>
@@ -189,6 +179,7 @@ export default function EventRouteScreen() {
             <Button
               onClick={() => {
                 setAttending(1);
+                dispatch(addAttendeeToEvent(params.eventId, user?.uid, 'yes'));
               }}
               className='me-2'
               outlined={attending != 1}
@@ -198,6 +189,7 @@ export default function EventRouteScreen() {
             <Button
               onClick={() => {
                 setAttending(0);
+                dispatch(removeAttendeeFromEvent(params.eventId, user?.uid));
               }}
               className='me-2'
               outlined={attending != 0}
@@ -207,6 +199,9 @@ export default function EventRouteScreen() {
             <Button
               onClick={() => {
                 setAttending(2);
+                dispatch(
+                  addAttendeeToEvent(params.eventId, user?.uid, 'maybe')
+                );
               }}
               outlined={attending != 2}
               title='Maybe'

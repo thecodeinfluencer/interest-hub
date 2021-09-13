@@ -38,22 +38,23 @@ const useStyles = makeStyles({
 });
 
 export default function Screen({ style, children, title, tab, authPass }) {
+  const [value, setValue] = React.useState(0);
   const classes = useStyles();
   const history = useHistory();
   const state = useSelector(state => state);
-  const [value, setValue] = React.useState(0);
+
+  const user = state.auth.user;
 
   useEffect(() => {
-    const auth = state.auth.user;
     const currentNavId =
       tab &&
       tabs.filter(tab => tab?.link === window?.location?.pathname)[0]?.id;
 
-    if (JSON.stringify(auth) === '{}') {
+    if (JSON.stringify(user) === '{}') {
       !authPass && history.push('/welcome');
     }
     setValue(currentNavId);
-  }, [tab, state.auth.user, history, authPass]);
+  }, [tab, user, history, authPass]);
 
   return (
     <>

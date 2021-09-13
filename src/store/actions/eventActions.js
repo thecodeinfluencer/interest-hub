@@ -53,8 +53,6 @@ export const loadEventAttendeesList = eventID => {
           setBusy(false);
         }
 
-        // console.log('uk', userVals);
-
         userVals.map(({ id: user, surety }) =>
           firebase
             .firestore()
@@ -68,8 +66,6 @@ export const loadEventAttendeesList = eventID => {
                   memberList,
                   eventID,
                 };
-
-                // console.log('passed', update);
 
                 dispatch({ type: 'LOAD_ATTENDEES_LIST', update });
                 setBusy(false);
@@ -122,24 +118,160 @@ export const createEvent = vals => {
                     setBusy(false);
                   })
                   .catch(err => {
-                    dispatch({ type: 'CREATE_EVENT_ERR', err });
+                    dispatch({ type: 'EVENT_ERR', err });
                     setBusy(false);
                   });
               })
               .catch(err => {
-                dispatch({ type: 'CREATE_EVENT_ERR', err });
+                dispatch({ type: 'EVENT_ERR', err });
                 setBusy(false);
               });
           })
           .catch(err => {
-            dispatch({ type: 'CREATE_EVENT_ERR', err });
+            dispatch({ type: 'EVENT_ERR', err });
             console.log('upload err: ', err);
             setBusy(false);
           });
       })
       .catch(err => {
-        dispatch({ type: 'CREATE_EVENT_ERR', err });
+        dispatch({ type: 'EVENT_ERR', err });
         console.log('upload err: ', err);
+        setBusy(false);
+      });
+  };
+};
+
+export const updateEvent = (vals, eventID) => {
+  return dispatch => {
+    const setBusy = busy => {
+      dispatch({ type: 'EVENTS_BUSY', busy });
+    };
+
+    setBusy(true);
+
+    const event = {
+      ...vals,
+    };
+
+    delete event.image;
+
+    storage
+      .ref(`/events/banners/${eventID}.png`)
+      .put(vals.image[0])
+      .then(data => {
+        data.ref
+          .getDownloadURL()
+          .then(photoURL => {
+            fdb
+              .collection('events')
+              .doc(`${eventID}`)
+              .update({
+                ...event,
+                photoURL,
+              })
+              .then(() => {
+                dispatch({ type: 'UPDATE_EVENT' });
+                setBusy(false);
+              })
+              .catch(err => {
+                dispatch({ type: 'EVENT_ERR', err });
+                setBusy(false);
+              });
+          })
+          .catch(err => {
+            dispatch({ type: 'EVENT_ERR', err });
+            console.log('upload err: ', err);
+            setBusy(false);
+          });
+      })
+      .catch(err => {
+        dispatch({ type: 'EVENT_ERR', err });
+        console.log('upload err: ', err);
+        setBusy(false);
+      });
+  };
+};
+
+export const deleteEvent = eventID => {
+  return dispatch => {
+    const setBusy = busy => {
+      dispatch({ type: 'EVENTS_BUSY', busy });
+    };
+
+    setBusy(true);
+
+    storage
+      .ref(`/events/banners/${eventID}.png`)
+      .delete()
+      .then(() => {
+        fdb
+          .collection('events')
+          .doc(`${eventID}`)
+          .delete()
+          .then(() => {
+            rdb
+              .ref(`event_attendees/${eventID}}`)
+              .remove()
+              .then(() => {
+                dispatch({ type: 'DELETE_EVENT' });
+                setBusy(false);
+              })
+              .catch(err => {
+                dispatch({ type: 'EVENT_ERR', err });
+                setBusy(false);
+              });
+          })
+          .catch(err => {
+            dispatch({ type: 'EVENT_ERR', err });
+            setBusy(false);
+          });
+      })
+      .catch(err => {
+        dispatch({ type: 'EVENT_ERR', err });
+        setBusy(false);
+      });
+  };
+};
+
+export const addAttendeeToEvent = (eventID, attendeeID, surety) => {
+  return dispatch => {
+    const setBusy = busy => {
+      dispatch({ type: 'EVENTS_BUSY', busy });
+    };
+
+    setBusy(true);
+
+    rdb
+      .ref(`event_attendees/${eventID}/${attendeeID}`)
+      .set({ id: attendeeID, surety })
+      .then(() => {
+        dispatch({ type: 'ADD_EVENT_ATTENDEE' });
+        setBusy(false);
+      })
+      .catch(err => {
+        dispatch({ type: 'EVENT_ERR', err });
+        setBusy(false);
+      });
+  };
+};
+
+export const removeAttendeeFromEvent = (eventID, attendeeID) => {
+  return dispatch => {
+    const setBusy = busy => {
+      dispatch({ type: 'EVENTS_BUSY', busy });
+    };
+
+    setBusy(true);
+
+    rdb
+      .ref(`event_attendees/${eventID}/${attendeeID}`)
+      .remove()
+      .then(() => {
+        dispatch({ type: 'REMOVE_EVENT_ATTENDEE' });
+        setBusy(false);
+      })
+      .catch(err => {
+        dispatch({ type: 'EVENT_ERR', err });
         setBusy(false);
       });
   };

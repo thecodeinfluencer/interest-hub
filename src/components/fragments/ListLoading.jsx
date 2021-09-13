@@ -6,7 +6,8 @@ export default function ListLoading() {
     <Container
       maxWidth='sm'
       style={{
-        paddingTop: 102,
+        paddingTop: 56,
+        paddingBottom: 32,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

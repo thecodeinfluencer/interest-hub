@@ -30,6 +30,7 @@ export default function RegisterScreen() {
   const state = useSelector(state => state);
   const error = state.auth.err;
   const busy = state.auth.busy;
+  const user = state.auth.user;
   const justRegistered = state.auth.justRegistered;
 
   function getLocation() {
@@ -48,11 +49,10 @@ export default function RegisterScreen() {
   useEffect(() => {
     getLocation();
 
-    const auth = state.auth.user;
-    if (JSON.stringify(auth) !== '{}') {
+    if (JSON.stringify(user) !== '{}') {
       history.push('/');
     }
-  }, [history, state.auth.user]);
+  }, [history, user]);
 
   const validate = Yup.object().shape({
     firstName: Yup.string().required().label('First Name'),

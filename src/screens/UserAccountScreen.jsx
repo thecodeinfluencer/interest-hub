@@ -1,5 +1,5 @@
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Screen from '../components/fragments/Screen';
@@ -15,10 +15,6 @@ function UserAccountScreen({ match }) {
   const people = state.people.list;
   const [{ firstName, surname, email, uid, photoURL, interests }] =
     people.filter(person => person?.uid === match.params.id);
-
-  useEffect(() => {
-    // dispatch(loadUserData());
-  }, [dispatch]);
 
   return (
     <Screen title='Profile'>

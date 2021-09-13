@@ -29,10 +29,8 @@ export default function eventsReducer(state = initialState, action) {
     }
     case 'CREATE_EVENT':
       return { ...state, err: null };
-    case 'CREATE_EVENT_ERR':
+    case 'EVENT_ERR':
       return { ...state, err: action.err };
-    case 'LOAD_EVENTS_ERROR':
-      return { ...state, list: [], err: action.err };
     default:
       return { ...state };
   }

@@ -12,14 +12,13 @@ import image from '../assets/welcome.svg';
 export default function WelcomeScreen() {
   const history = useHistory();
   const state = useSelector(state => state);
+  const user = state.auth.user;
 
   useEffect(() => {
-    const auth = state.auth.user;
-
-    if (JSON.stringify(auth) !== '{}') {
+    if (JSON.stringify(user) !== '{}') {
       history.push('/');
     }
-  }, [history, state.auth.user]);
+  }, [history, user]);
 
   return (
     <div

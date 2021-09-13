@@ -18,6 +18,7 @@ export default function LoginScreen() {
   const state = useSelector(state => state);
   const error = state.auth.err;
   const busy = state.auth.busy;
+  const user = state.auth.user;
 
   const validate = Yup.object().shape({
     email: Yup.string().required().email().label('Email Address'),
@@ -29,12 +30,10 @@ export default function LoginScreen() {
   };
 
   useEffect(() => {
-    const auth = state.auth.user;
-
-    if (JSON.stringify(auth) !== '{}') {
+    if (JSON.stringify(user) !== '{}') {
       history.push('/');
     }
-  });
+  }, [user]);
 
   return (
     <Container

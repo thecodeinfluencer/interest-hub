@@ -1,20 +1,18 @@
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
-import { AddRounded, ChevronRight, InfoOutlined } from '@material-ui/icons';
-import { AvatarGroup } from '@material-ui/lab';
 import {
-  GoogleMap,
-  InfoWindow,
-  Marker,
-  useJsApiLoader,
-} from '@react-google-maps/api';
-import moment from 'moment';
+  AddRounded,
+  ChevronRight,
+  CreateRounded,
+  InfoOutlined,
+} from '@material-ui/icons';
+import { AvatarGroup } from '@material-ui/lab';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import mapIcon from '../assets/pin0.svg';
 import Screen from '../components/fragments/Screen';
 import EventCard from '../components/legacy/EventCard';
-import GroupChat from '../components/legacy/GroupChat';
 import Button from '../components/ui/Button';
 import { loadEvents } from '../store/actions/eventActions';
 import {
@@ -28,12 +26,15 @@ export default function GroupRouteScreen() {
   const history = useHistory();
   const params = useParams();
 
+  const events = state.events.list;
+  const user = state.auth.user;
+
   const { name, interests, bio, location, photoURL, members, messages } =
     state.groups.list.filter(({ id }) => id == params.id)[0];
 
-  const events = state.events.list;
+  const isAdmin = Boolean(members?.filter(mb => mb.uid == user.uid)[0]?.admin);
 
-  console.log(events);
+  console.log('isAdmin: ', isAdmin);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -50,7 +51,7 @@ export default function GroupRouteScreen() {
     dispatch(loadGroupMembersList(params.id));
     dispatch(loadGroupMessagesList(params.id));
     dispatch(loadEvents());
-  }, [params]);
+  }, [params.id]);
 
   console.log(state.groups.list.filter(({ id }) => id == params.id)[0]);
 
@@ -83,6 +84,33 @@ export default function GroupRouteScreen() {
           </Typography>
         </Grid>
 
+        {isAdmin && (
+          <Grid xs={12} item>
+            <div
+              className='d-flex align-items-center justify-content-between'
+              style={{
+                marginTop: 20,
+                marginBottom: 10,
+              }}
+            >
+              <Typography variant='h6' noWrap={true}>
+                Admin
+              </Typography>
+              {isAdmin && (
+                <Button
+                  startIcon={<CreateRounded />}
+                  variant='outlined'
+                  size='small'
+                  title='Edit Group'
+                  onClick={() => {
+                    // history.push('/create/event');
+                  }}
+                />
+              )}
+            </div>
+          </Grid>
+        )}
+
         <Grid xs={12} item>
           <Typography
             style={{
@@ -112,16 +140,28 @@ export default function GroupRouteScreen() {
         </Grid>
 
         <Grid xs={12} item>
-          <Typography
+          <div
+            className='d-flex align-items-center justify-content-between'
             style={{
               marginTop: 20,
               marginBottom: 10,
             }}
-            variant='h6'
-            noWrap={true}
           >
-            Members
-          </Typography>
+            <Typography variant='h6' noWrap={true}>
+              Members
+            </Typography>
+            {isAdmin && (
+              <Button
+                startIcon={<AddRounded />}
+                variant='outlined'
+                size='small'
+                title='Invite Members'
+                onClick={() => {
+                  // history.push('/create/event');
+                }}
+              />
+            )}
+          </div>
         </Grid>
         <Grid xs={12} item>
           <div className='d-flex justify-content-between'>
@@ -183,16 +223,7 @@ export default function GroupRouteScreen() {
                   lng: parseFloat(location?.longitude),
                 }}
                 zIndex={2}
-              >
-                <InfoWindow
-                  position={{
-                    lat: parseFloat(location?.latitude),
-                    lng: parseFloat(location?.longitude),
-                  }}
-                >
-                  <div>Group Location</div>
-                </InfoWindow>
-              </Marker>
+              ></Marker>
             </GoogleMap>
           )}
         </Grid>
@@ -212,22 +243,22 @@ export default function GroupRouteScreen() {
               </Typography>
             </Grid>
             <Grid xs={12} item>
-              {messages
-                ?.slice(0, 2)
-                .filter(({ reply_to }) => reply_to == false)
-                .map(({ id, sender, date, message }) => (
-                  <GroupChat
-                    id={id}
-                    key={id}
-                    sender={sender}
-                    time={moment(date).fromNow()}
-                    content={message}
-                    replies={messages.filter(({ reply_to }) => reply_to == id)}
-                    preview
-                  />
-                ))}
               <div className='d-flex justify-content-between'>
-                <div />
+                <AvatarGroup max={4}>
+                  {messages.length < 1 && (
+                    <Avatar alt={user.displayName} src={user.photoURL} />
+                  )}
+                  {messages
+                    ?.slice(0, 2)
+                    .filter(({ reply_to }) => reply_to == false)
+                    .map(({ sender }) => (
+                      <Avatar
+                        key={sender.uid}
+                        alt={sender.displayName}
+                        src={sender.photoURL}
+                      />
+                    ))}
+                </AvatarGroup>
                 <Button
                   onClick={() => {
                     history.push(`/groups/${params.id}/chats`);
@@ -253,15 +284,17 @@ export default function GroupRouteScreen() {
             <Typography variant='h6' noWrap={true}>
               Events
             </Typography>
-            <Button
-              startIcon={<AddRounded />}
-              variant='outlined'
-              size='small'
-              title='Create Event'
-              onClick={() => {
-                history.push('/create/event');
-              }}
-            />
+            {isAdmin && (
+              <Button
+                startIcon={<AddRounded />}
+                variant='outlined'
+                size='small'
+                title='Create Event'
+                onClick={() => {
+                  history.push('/create/event');
+                }}
+              />
+            )}
           </div>
         </Grid>
         {events.map(event => (

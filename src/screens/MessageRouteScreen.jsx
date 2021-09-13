@@ -1,5 +1,5 @@
 import { Avatar, Grid, makeStyles } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatInput from '../components/fragments/ChatInput';
 import Screen from '../components/fragments/Screen';
@@ -54,14 +54,6 @@ export default function MessageRouteScreen({ match }) {
           (message.sender === user?.uid && message.reciever === activeChatID)
       )
     : [];
-
-  // console.log('Active Chat ID :: ', activeChatID);
-  // console.log('Messages :: ', state.messages.list);
-  // console.log(':: ', chats);
-
-  useEffect(() => {
-    // dispatch(loadMessages(match.params.id));
-  }, [dispatch, match.params.id]);
 
   return (
     <>
