@@ -7,23 +7,33 @@ import Screen from '../components/fragments/Screen';
 import SearchInput from '../components/fragments/SearchInput';
 import SelectInterests from '../components/fragments/SelectInterests';
 import Button from '../components/ui/Button';
-import ImageUpload from '../components/ui/ImageUpload';
 import Input from '../components/ui/Input';
 import Form from '../components/utilities/Form';
-import { createEvent } from '../store/actions/eventActions';
+import { deleteEvent, updateEvent } from '../store/actions/eventActions';
 import cities2 from '../store/local/worldcities.json';
 
-export default function CreateEventScreen() {
+export default function EditEventScreen() {
   const state = useSelector(state => state);
 
+  const params = useParams();
+
+  const {
+    name,
+    bio,
+    location: prevLocation,
+    date,
+    time,
+    city: prevCity,
+    interests: prevInterests,
+  } = state.events.list.filter(({ id }) => id == params.eventId)[0];
+
   const [localErr, setLocalErr] = useState(state.events.err);
-  const [city, setCity] = useState({});
-  const [location, setLocation] = useState('');
-  const [interests, setInterests] = useState([]);
+  const [city, setCity] = useState(prevCity);
+  const [location, setLocation] = useState(prevLocation);
+  const [interests, setInterests] = useState(prevInterests);
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const { groupID } = useParams();
   const error = state.events.err || localErr;
   const busy = state.events.busy;
 
@@ -32,7 +42,6 @@ export default function CreateEventScreen() {
     bio: Yup.string().min(25).required().label('Event Bio'),
     date: Yup.string().required().label('Event Date'),
     time: Yup.string().required().label('Event Time'),
-    image: Yup.array().required().label('Event Image'),
   });
 
   return (
@@ -40,14 +49,14 @@ export default function CreateEventScreen() {
       style={{
         marginTop: 16,
       }}
-      title='Create Event'
+      title='Edit Event'
     >
       <Form
         onSubmit={(vals, { resetForm }) => {
-          if (!vals.image.length) {
-            setLocalErr({ message: 'Select an image' });
-            return;
-          }
+          //   if (!vals.image.length) {
+          //     setLocalErr({ message: 'Select an image' });
+          //     return;
+          //   }
 
           if (interests.length < 2) {
             setLocalErr({ message: 'Select at least two tags' });
@@ -60,8 +69,9 @@ export default function CreateEventScreen() {
           }
 
           setLocalErr(null);
+
           dispatch(
-            createEvent({ ...vals, location, interests, city, group: groupID })
+            updateEvent({ ...vals, location, interests, city }, params.eventId)
           );
 
           setTimeout(() => {
@@ -74,13 +84,13 @@ export default function CreateEventScreen() {
         }}
         validationSchema={validate}
         initialValues={{
-          name: '',
-          bio: '',
-          date: '',
-          time: '',
-          image: [],
+          name: name,
+          bio: bio,
+          date: date,
+          time: time,
         }}
       >
+        {/* <div>{params.eventId}</div> */}
         <Input name='name' placeholder='Event Name' />
         <Input type='date' name='date' placeholder='Event Date' />
         <Input type='time' name='time' placeholder='Event Time' />
@@ -88,6 +98,7 @@ export default function CreateEventScreen() {
 
         <SearchInput
           data={cities2}
+          prevValue={`${city.city}, ${city.country}`}
           onSelect={city => {
             setCity(city);
             setLocation({
@@ -96,10 +107,17 @@ export default function CreateEventScreen() {
             });
           }}
         />
-        <ImageUpload limit={1} name='image' variant='rounded' />
+
+        {/* <ImageUpload
+          limit={1}
+          name='image'
+          variant='rounded'
+          placeholder={photoURL}
+        /> */}
 
         <SelectInterests
           title='Select Event Tags'
+          initialVals={prevInterests}
           onSelect={interests => {
             setInterests(interests);
           }}
@@ -118,7 +136,29 @@ export default function CreateEventScreen() {
 
         <div className='d-flex justify-content-between align-items-center w-100'>
           <div></div>
-          <Button disabled={busy} title='Create' submit />
+          <div className='d-flex align-items-center'>
+            <Button
+              className='me-2'
+              variant='outlined'
+              disabled={busy}
+              title='Delete'
+              onClick={() => {
+                let confirmDelete = confirm(`Delete group '${name}'`);
+
+                if (confirmDelete) {
+                  dispatch(deleteEvent(params.eventId));
+                  setTimeout(() => {
+                    if (!error) {
+                      history.entries = [];
+                      history.index = -1;
+                      history.push(`/groups`);
+                    }
+                  }, 1000);
+                }
+              }}
+            />
+            <Button disabled={busy} title='Update' submit />
+          </div>
         </div>
       </Form>
     </Screen>

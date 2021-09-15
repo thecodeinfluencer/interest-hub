@@ -110,11 +110,14 @@ export const sendMessage = (message, sender, reciever) => {
 
     setBusy(true);
 
+    let time = Date.now();
+
     let body = {
       isseen: false,
       message,
       sender,
       reciever,
+      time,
     };
 
     firebase

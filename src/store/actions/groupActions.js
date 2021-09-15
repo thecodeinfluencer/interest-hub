@@ -209,33 +209,15 @@ export const updateGroup = (vals, groupID) => {
 
     delete group.image;
 
-    storage
-      .ref(`/groups/profiles/${groupID}.png`)
-      .put(vals.image[0])
-      .then(data => {
-        data.ref
-          .getDownloadURL()
-          .then(photoURL => {
-            fdb
-              .collection('groups')
-              .doc(`${groupID}`)
-              .update({
-                ...group,
-                photoURL,
-              })
-              .then(() => {
-                dispatch({ type: 'UPDATE_GROUP' });
-                setBusy(false);
-              })
-              .catch(err => {
-                dispatch({ type: 'GROUP_ERR', err });
-                setBusy(false);
-              });
-          })
-          .catch(err => {
-            dispatch({ type: 'GROUP_ERR', err });
-            setBusy(false);
-          });
+    fdb
+      .collection('groups')
+      .doc(`${groupID}`)
+      .update({
+        ...group,
+      })
+      .then(() => {
+        dispatch({ type: 'UPDATE_GROUP' });
+        setBusy(false);
       })
       .catch(err => {
         dispatch({ type: 'GROUP_ERR', err });

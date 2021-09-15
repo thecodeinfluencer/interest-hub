@@ -155,38 +155,18 @@ export const updateEvent = (vals, eventID) => {
 
     delete event.image;
 
-    storage
-      .ref(`/events/banners/${eventID}.png`)
-      .put(vals.image[0])
-      .then(data => {
-        data.ref
-          .getDownloadURL()
-          .then(photoURL => {
-            fdb
-              .collection('events')
-              .doc(`${eventID}`)
-              .update({
-                ...event,
-                photoURL,
-              })
-              .then(() => {
-                dispatch({ type: 'UPDATE_EVENT' });
-                setBusy(false);
-              })
-              .catch(err => {
-                dispatch({ type: 'EVENT_ERR', err });
-                setBusy(false);
-              });
-          })
-          .catch(err => {
-            dispatch({ type: 'EVENT_ERR', err });
-            console.log('upload err: ', err);
-            setBusy(false);
-          });
+    fdb
+      .collection('events')
+      .doc(`${eventID}`)
+      .update({
+        ...event,
+      })
+      .then(() => {
+        dispatch({ type: 'UPDATE_EVENT' });
+        setBusy(false);
       })
       .catch(err => {
         dispatch({ type: 'EVENT_ERR', err });
-        console.log('upload err: ', err);
         setBusy(false);
       });
   };

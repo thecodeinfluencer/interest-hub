@@ -1,4 +1,5 @@
-import { Avatar, Grid, makeStyles } from '@material-ui/core';
+import { Avatar, Grid, makeStyles, Typography } from '@material-ui/core';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatInput from '../components/fragments/ChatInput';
@@ -14,14 +15,7 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     display: 'flex',
   },
-  bubble: {
-    display: 'inline-block',
-    padding: 10,
-    marginBottom: 16,
-    alignSelf: 'baseline',
-    borderRadius: 10,
-    maxWidth: '80%',
-  },
+  bubble: {},
 }));
 
 // eslint-disable-next-line react/prop-types
@@ -67,7 +61,7 @@ export default function MessageRouteScreen({ match }) {
       >
         <Grid item xs={12}>
           {chats &&
-            chats.map(({ sender, message }, i = 0) => {
+            chats.map(({ sender, message, time }, i = 0) => {
               let right = sender === uid;
               let left = !right;
               let direction = right ? 'right' : 'left';
@@ -88,18 +82,33 @@ export default function MessageRouteScreen({ match }) {
                   )}
                   <div
                     style={{
-                      // borderTopLeftRadius: left && 0,
-                      // borderTopRightRadius: right && 0,
-                      marginRight: 10,
-                      marginLeft: 10,
-                      backgroundColor: left ? colors.theme : '#fff',
-                      color: left ? '#fff' : colors.theme,
-                      border: left ? 'none' : '1px solid ',
+                      display: 'inline-block',
+                      marginBottom: 16,
+                      alignSelf: 'baseline',
+                      maxWidth: '80%',
                     }}
-                    key={i++}
-                    className={classes.bubble}
                   >
-                    <div className={classes.button}>{message}</div>
+                    <div
+                      style={{
+                        borderRadius: 10,
+                        padding: 10,
+                        marginRight: 10,
+                        marginLeft: 10,
+                        backgroundColor: left ? colors.theme : '#fff',
+                        color: left ? '#fff' : colors.theme,
+                        border: left ? 'none' : '1px solid ',
+                      }}
+                      key={i++}
+                    >
+                      <div className={classes.button}>{message}</div>
+                    </div>
+                    <Typography
+                      color='textSecondary'
+                      className='mx-2 my-1'
+                      variant='body2'
+                    >
+                      {moment(time).format('hh:mm . dddd')}
+                    </Typography>
                   </div>
                 </div>
               );

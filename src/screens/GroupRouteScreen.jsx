@@ -3,6 +3,7 @@ import {
   AddRounded,
   ChevronRight,
   CreateRounded,
+  DeleteRounded,
   InfoOutlined,
 } from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
@@ -14,10 +15,14 @@ import mapIcon from '../assets/pin0.svg';
 import Screen from '../components/fragments/Screen';
 import EventCard from '../components/legacy/EventCard';
 import Button from '../components/ui/Button';
+import { removeDuplicates } from '../methods';
 import { loadEvents } from '../store/actions/eventActions';
 import {
+  addMemberToGroup,
   loadGroupMembersList,
   loadGroupMessagesList,
+  loadGroups,
+  removeMemberFromGroup,
 } from '../store/actions/groupActions';
 
 export default function GroupRouteScreen() {
@@ -26,15 +31,16 @@ export default function GroupRouteScreen() {
   const history = useHistory();
   const params = useParams();
 
-  const events = state.events.list;
+  const events = removeDuplicates(state.events.list, item => item.id);
   const user = state.auth.user;
 
   const { name, interests, bio, location, photoURL, members, messages } =
     state.groups.list.filter(({ id }) => id == params.id)[0];
 
   const isAdmin = Boolean(members?.filter(mb => mb.uid == user.uid)[0]?.admin);
-
-  console.log('isAdmin: ', isAdmin);
+  const isMember = Boolean(
+    members?.filter(mb => mb.uid == user.uid).length > 0
+  );
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -48,12 +54,11 @@ export default function GroupRouteScreen() {
   }, []);
 
   useEffect(() => {
+    dispatch(loadGroups());
+    dispatch(loadEvents());
     dispatch(loadGroupMembersList(params.id));
     dispatch(loadGroupMessagesList(params.id));
-    dispatch(loadEvents());
-  }, [params.id]);
-
-  console.log(state.groups.list.filter(({ id }) => id == params.id)[0]);
+  }, [dispatch, params.id]);
 
   return (
     <>
@@ -97,31 +102,65 @@ export default function GroupRouteScreen() {
                 Admin
               </Typography>
               {isAdmin && (
-                <Button
-                  startIcon={<CreateRounded />}
-                  variant='outlined'
-                  size='small'
-                  title='Edit Group'
-                  onClick={() => {
-                    // history.push('/create/event');
-                  }}
-                />
+                <div className='d-flex align-items-center'>
+                  <Button
+                    className='me-2'
+                    startIcon={<CreateRounded />}
+                    variant='outlined'
+                    size='small'
+                    title='Edit Group'
+                    onClick={() => {
+                      history.push(`/groups/${params.id}/edit`);
+                    }}
+                  />
+                  <Button
+                    startIcon={<AddRounded />}
+                    variant='outlined'
+                    size='small'
+                    title='Add  Members'
+                    onClick={() => {
+                      history.push(`/groups/${params.id}/add`);
+                    }}
+                  />
+                </div>
               )}
             </div>
           </Grid>
         )}
 
         <Grid xs={12} item>
-          <Typography
+          <div
+            className='d-flex align-items-center justify-content-between'
             style={{
               marginTop: 20,
               marginBottom: 10,
             }}
-            variant='h6'
-            noWrap={true}
           >
-            Group Tags
-          </Typography>
+            <Typography variant='h6' noWrap={true}>
+              Group Tags
+            </Typography>
+            {!isMember ? (
+              <Button
+                startIcon={<AddRounded />}
+                variant='outlined'
+                size='small'
+                title='Join Group'
+                onClick={() => {
+                  dispatch(addMemberToGroup(user.uid, params.id));
+                }}
+              />
+            ) : (
+              <Button
+                startIcon={<DeleteRounded />}
+                variant='outlined'
+                size='small'
+                title='Leave Group'
+                onClick={() => {
+                  dispatch(removeMemberFromGroup(user.uid, params.id));
+                }}
+              />
+            )}
+          </div>
         </Grid>
         <Grid xs={12} item>
           {interests &&
@@ -291,19 +330,21 @@ export default function GroupRouteScreen() {
                 size='small'
                 title='Create Event'
                 onClick={() => {
-                  history.push('/create/event');
+                  history.push(`/create/event/${params.id}`);
                 }}
               />
             )}
           </div>
         </Grid>
-        {events.map(event => (
-          <EventCard
-            event={event}
-            key={event.id}
-            link={`/groups/${params.id}/events/${event.id}`}
-          />
-        ))}
+        {events
+          .filter(({ group }) => group == params.id)
+          .map(event => (
+            <EventCard
+              event={event}
+              key={event.id}
+              link={`/groups/${params.id}/events/${event.id}`}
+            />
+          ))}
       </Screen>
     </>
   );

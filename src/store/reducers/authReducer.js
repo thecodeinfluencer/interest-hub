@@ -42,7 +42,7 @@ export default function authReducer(state = initialState, action) {
     case 'USER_UPDATE':
       return {
         ...state,
-        user: action.user,
+        // user: action.user,
         err: null,
       };
     case 'USER_RESET':

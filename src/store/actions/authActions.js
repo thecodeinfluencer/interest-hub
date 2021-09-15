@@ -1,9 +1,5 @@
-import axios from 'axios';
 import firebase from '../../config/firebase';
 import { getRandomColor } from '../../methods';
-import { Environment } from '../local/contents';
-
-const baseUrl = Environment.apiUrl;
 
 export const login = ({ email, password }) => {
   return dispatch => {
@@ -129,157 +125,39 @@ export const register = values => {
   };
 };
 
-export const requestCode = vals => {
-  return dispatch => {
-    const body = {
-      ...vals,
-    };
-
-    const setBusy = busy => {
-      dispatch({ type: 'RESET_BUSY', busy });
-    };
-
-    setBusy(true);
-
-    let err = null;
-    dispatch({ type: 'USER_RESET_ERROR', err });
-
-    axios
-      .post(`${baseUrl}/reset/request`, body)
-      .then(res => {
-        let user = res.data;
-        //
-        console.log(user);
-        dispatch({ type: 'USER_RESET', user });
-        setBusy(false);
-      })
-      .catch(error => {
-        let err = error?.response?.data;
-        //
-        console.log(err);
-        dispatch({ type: 'USER_RESET_ERROR', err });
-        setBusy(false);
-      });
-  };
-};
-
-export const createPassword = vals => {
-  return dispatch => {
-    const body = {
-      ...vals,
-      device_name: 'Device',
-    };
-
-    const setBusy = busy => {
-      dispatch({ type: 'RESET_BUSY', busy });
-    };
-
-    setBusy(true);
-
-    let err = null;
-    dispatch({ type: 'USER_RESET_ERROR', err });
-
-    axios
-      .post(`${baseUrl}/reset`, body)
-      .then(res => {
-        let user = res.data;
-        //
-        console.log(user);
-        dispatch({ type: 'USER_RESET', user });
-        setBusy(false);
-      })
-      .catch(error => {
-        let err = error?.response?.data;
-        //
-        console.log(err);
-        dispatch({ type: 'USER_RESET_ERROR', err });
-        setBusy(false);
-      });
-  };
-};
-
-export const updateCredentials = vals => {
+export const update = values => {
   return (dispatch, getState) => {
-    const auth = getState().auth.token;
-
-    const config = {
-      headers: { Authorization: `Bearer ${auth}` },
-    };
-
-    const body = {
-      ...vals,
-    };
+    let { firstName, surname, bio, phoneNumber, email, location, interests } =
+      values;
 
     const setBusy = busy => {
-      dispatch({ type: 'PASSWORD_BUSY', busy });
+      dispatch({ type: 'UPDATE_BUSY', busy });
     };
 
     setBusy(true);
 
-    let err = null;
-    dispatch({ type: 'USER_PASSWORD_ERROR', err });
-
-    axios
-      .put(`${baseUrl}/user/credentials`, body, config)
-      .then(res => {
-        let info = res.data;
-        //
-        console.log(info);
-        setBusy(false);
-        dispatch({ type: 'USER_PASSWORD', info });
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(`${getState().auth.user?.uid}`)
+      .update({
+        displayName: firstName + ' ' + surname,
+        firstName,
+        surname,
+        email,
+        bio,
+        location,
+        phoneNumber,
+        interests,
+        photoURL: `https://ui-avatars.com/api/?name=${firstName}+${surname}&background=${getRandomColor()}`,
       })
-      .catch(error => {
-        let err = error?.response?.data;
-        //
-        console.log(error.response);
-        console.log(err);
-        setBusy(false);
-        dispatch({ type: 'USER_PASSWORD_ERROR', err });
-      });
-  };
-};
-
-export const changeAvatar = ({ image }) => {
-  return (dispatch, getState) => {
-    const auth = getState().auth.token;
-
-    const setBusy = busy => {
-      dispatch({ type: 'AVATAR_BUSY', busy });
-    };
-
-    setBusy(true);
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${auth}`,
-        // "Content-Type": "application/x-www-form-urlencoded",
-        enctype: 'multipart/form-data',
-      },
-    };
-
-    const body = {
-      image,
-    };
-
-    console.log('body:', body);
-
-    let err = null;
-    dispatch({ type: 'USER_AVATAR_ERROR', err });
-
-    axios
-      .post(`${baseUrl}/user`, body, config)
-      .then(res => {
-        let info = res.data;
-        //
-        console.log(info);
-        dispatch({ type: 'USER_AVATAR', info });
+      .then(() => {
+        // dispatch({ type: 'USER_UPDATE' });
         setBusy(false);
       })
-      .catch(error => {
-        let err = error?.response?.data;
-        //
+      .catch(err => {
         console.log(err);
-        dispatch({ type: 'USER_AVATAR_ERROR', err });
+        dispatch({ type: 'USER_UPDATE_ERROR', err });
         setBusy(false);
       });
   };

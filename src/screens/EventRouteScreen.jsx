@@ -1,5 +1,5 @@
 import { Avatar, Grid, Typography } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
+import { CreateRounded, InfoOutlined } from '@material-ui/icons';
 import { AvatarGroup } from '@material-ui/lab';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import moment from 'moment';
@@ -12,6 +12,7 @@ import Button from '../components/ui/Button';
 import {
   addAttendeeToEvent,
   loadEventAttendeesList,
+  loadEvents,
   removeAttendeeFromEvent,
 } from '../store/actions/eventActions';
 
@@ -28,6 +29,10 @@ export default function EventRouteScreen() {
   const { name, bio, location, photoURL, date, time, attendees } =
     state.events.list.filter(({ id }) => id == params.eventId)[0];
 
+  const { members } = state.groups.list.filter(({ id }) => id == params.id)[0];
+
+  const isAdmin = Boolean(members?.filter(mb => mb.uid == user.uid)[0]?.admin);
+
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: '',
@@ -40,6 +45,7 @@ export default function EventRouteScreen() {
   }, []);
 
   useEffect(() => {
+    dispatch(loadEvents());
     dispatch(loadEventAttendeesList(params.eventId));
 
     if (attendees?.filter(at => at.uid == user.uid).length > 0) {
@@ -47,7 +53,7 @@ export default function EventRouteScreen() {
         ? setAttending(1)
         : setAttending(2);
     }
-  }, [params.eventId]);
+  }, [dispatch, params.eventId]);
 
   return (
     <>
@@ -84,6 +90,35 @@ export default function EventRouteScreen() {
             {bio}
           </Typography>
         </Grid>
+
+        {isAdmin && (
+          <Grid xs={12} item>
+            <div
+              className='d-flex align-items-center justify-content-between'
+              style={{
+                marginTop: 20,
+                marginBottom: 10,
+              }}
+            >
+              <Typography variant='h6' noWrap={true}>
+                Admin
+              </Typography>
+              {isAdmin && (
+                <Button
+                  startIcon={<CreateRounded />}
+                  variant='outlined'
+                  size='small'
+                  title='Edit Event'
+                  onClick={() => {
+                    history.push(
+                      `/groups/${params.id}/events/${params.eventId}/edit`
+                    );
+                  }}
+                />
+              )}
+            </div>
+          </Grid>
+        )}
 
         <Grid xs={12} item>
           <Typography

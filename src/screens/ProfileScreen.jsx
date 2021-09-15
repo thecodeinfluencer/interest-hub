@@ -11,11 +11,15 @@ import Screen from '../components/fragments/Screen';
 import GroupCard from '../components/legacy/GroupCard';
 import Button from '../components/ui/Button';
 import { loadUserData, logout } from '../store/actions/authActions';
-import { groups } from '../store/local/contents';
+// import { groups } from '../store/local/contents';
 
 import mapIcon from '../assets/pin0.svg';
 import mapIcon2 from '../assets/pin1.svg';
 import { useHistory } from 'react-router';
+import { removeDuplicates } from '../methods';
+import { loadGroupMembersList } from '../store/actions/groupActions';
+import { loadEventAttendeesList } from '../store/actions/eventActions';
+import EventCard from '../components/legacy/EventCard';
 
 function ProfileScreen() {
   // const [map, setMap] = useState(null);
@@ -23,10 +27,10 @@ function ProfileScreen() {
   const dispatch = useDispatch();
   const history = useHistory();
   const people = state.people.list;
-  const { firstName, surname, email, location, photoURL, interests } = state
-    .auth?.user?.firstName
-    ? state.auth?.user
-    : {};
+  const groups = removeDuplicates(state.groups.list, item => item.id);
+  const events = removeDuplicates(state.events.list, item => item.id);
+  const { uid, bio, firstName, surname, email, location, photoURL, interests } =
+    state.auth?.user?.firstName ? state.auth?.user : {};
 
   const [selectedLocation, setSelectedLocation] = useState(location);
 
@@ -37,29 +41,25 @@ function ProfileScreen() {
 
   const onLoad = React.useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds();
-    console.log(bounds);
     map.fitBounds(bounds);
-    // setMap(map);
   }, []);
 
-  const onUnmount = React.useCallback(function callback() {
-    // setMap(null);
-  }, []);
+  const onUnmount = React.useCallback(function callback() {}, []);
 
   useEffect(() => {
     dispatch(loadUserData());
+    groups.map(({ id }) => dispatch(loadGroupMembersList(id)));
+    events.map(({ id }) => dispatch(loadEventAttendeesList(id)));
   }, [dispatch]);
+
+  console.log(events);
 
   return (
     <Screen title='Profile'>
       <Grid xs={12} item>
         <div style={{ display: 'flex', alignItems: 'center', marginTop: 16 }}>
           <Avatar
-            src={
-              photoURL
-                ? photoURL
-                : `https://ui-avatars.com/api/?background=random&name=${firstName}+${surname}`
-            }
+            src={photoURL}
             style={{
               width: 80,
               height: 80,
@@ -103,8 +103,7 @@ function ProfileScreen() {
       </Grid>
       <Grid xs={12} item>
         <Typography>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusamus
-          omnis harum modi eos non repellat dicta nobis quaerat voluptate rerum?
+          {bio || 'Update your profile for people to see your bio.'}
         </Typography>
       </Grid>
 
@@ -148,15 +147,38 @@ function ProfileScreen() {
         </Typography>
       </Grid>
 
-      {groups.map(({ name }) => (
-        <GroupCard
-          image={`https://picsum.photos/id/${Math.floor(
-            Math.random() * 200
-          )}/200/300`}
-          name={name}
-          key={`${Math.random() * 1000}`}
-        />
-      ))}
+      {groups
+        .filter(
+          ({ members }) =>
+            members?.filter(({ uid: uid2 }) => uid2 == uid).length > 0
+        )
+        .map(({ id, name, photoURL }) => (
+          <GroupCard key={id} image={photoURL} name={name} link={id} />
+        ))}
+
+      <Grid xs={12} item>
+        <Typography
+          style={{
+            marginTop: 20,
+            marginBottom: 10,
+          }}
+          variant='h6'
+        >
+          Events
+        </Typography>
+      </Grid>
+      {events
+        .filter(
+          ({ attendees }) =>
+            attendees?.filter(({ uid: uid2 }) => uid2 == uid).length > 0
+        )
+        .map(event => (
+          <EventCard
+            event={event}
+            key={event.id}
+            link={`/groups/${event.group}/events/${event.id}`}
+          />
+        ))}
 
       <Grid xs={12} item>
         <Typography
@@ -200,8 +222,6 @@ function ProfileScreen() {
               </InfoWindow>
             </Marker>
             {people.map(({ location: mapLocation, firstName, surname }) => {
-              console.log('maplctn: ', firstName);
-              console.log('maplctn: ', mapLocation);
               return (
                 <Marker
                   key={`${Math.random() * 1000}`}

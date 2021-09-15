@@ -9,17 +9,11 @@ import SelectInterests from '../components/fragments/SelectInterests';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Form from '../components/utilities/Form';
-import { register } from '../store/actions/authActions';
+import { update } from '../store/actions/authActions';
 
 export default function EditProfileScreen() {
-  const [UpdateLocation, setUpdateLocation] = useState(false);
-  const [location, setLocation] = useState(null);
-  const [interests, setinterests] = useState([]);
-  const dispatch = useDispatch();
-
   const state = useSelector(state => state);
-  const error = state.auth.err;
-  const busy = state.auth.busy;
+
   const {
     firstName,
     surname,
@@ -27,7 +21,16 @@ export default function EditProfileScreen() {
     interests: prevInterests,
     bio,
     phoneNumber,
+    location: prevLocation,
   } = state.auth?.user?.firstName ? state.auth?.user : {};
+
+  const [updateLocation, setUpdateLocation] = useState(false);
+  const [location, setLocation] = useState(prevLocation);
+  const [interests, setinterests] = useState(prevInterests);
+  const dispatch = useDispatch();
+
+  const error = state.auth.err;
+  const busy = state.auth.busy;
 
   function getLocation() {
     if (navigator.geolocation) {
@@ -61,16 +64,16 @@ export default function EditProfileScreen() {
         marginTop: 16,
       }}
     >
-      {UpdateLocation && !location && (
+      {updateLocation && !location && (
         <Alert style={{ marginBottom: 20 }} icon={false} severity='warning'>
           You need to enable location access to proceed
         </Alert>
       )}
       <Form
         onSubmit={vals => {
-          UpdateLocation
-            ? console.log(register({ ...vals, location, interests }))
-            : dispatch(register({ ...vals, interests }));
+          updateLocation
+            ? dispatch(update({ ...vals, location, interests }))
+            : dispatch(update({ ...vals, location: prevLocation, interests }));
         }}
         validationSchema={validate}
         initialValues={{
@@ -112,7 +115,7 @@ export default function EditProfileScreen() {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={UpdateLocation}
+                  checked={updateLocation}
                   onChange={e => setUpdateLocation(e.target.checked)}
                   color='primary'
                 />
@@ -121,7 +124,7 @@ export default function EditProfileScreen() {
             />
           </div>
           <Button
-            disabled={busy || (UpdateLocation && !location)}
+            disabled={busy || (updateLocation && !location)}
             title='Update'
             submit
           />

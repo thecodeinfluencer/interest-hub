@@ -13,9 +13,8 @@ export default function groupsReducer(state = initialState, action) {
     case 'LOAD_MEMBER_LIST': {
       const { memberList, groupID } = action.update;
       const state1 = state;
-      const state2 = { ...state1 };
 
-      const list = state2.list.map(group => {
+      const list = state1.list.map(group => {
         let group2 = group;
 
         if (group.id == groupID) {
@@ -29,10 +28,9 @@ export default function groupsReducer(state = initialState, action) {
     }
     case 'LOAD_MESSAGE_LIST': {
       const { messageList, groupID } = action.update;
-      const state1 = { ...state };
-      const state2 = state1;
+      const state1 = state;
 
-      const list = state2.list.map(group => {
+      const list = state1.list.map(group => {
         let group2 = group;
 
         if (group.id == groupID) {
@@ -45,6 +43,8 @@ export default function groupsReducer(state = initialState, action) {
       return { ...state, list: list, err: null };
     }
     case 'CREATE_GROUP':
+      return { ...state, err: null };
+    case 'UPDATE_GROUP':
       return { ...state, err: null };
     case 'GROUP_ERR':
       return { ...state, err: action.err };

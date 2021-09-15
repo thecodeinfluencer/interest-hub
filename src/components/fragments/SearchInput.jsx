@@ -7,8 +7,8 @@ import {
   TextField,
 } from '@material-ui/core';
 
-export default function SearchInput({ data, onSelect }) {
-  const [value, setValue] = useState('');
+export default function SearchInput({ data, onSelect, prevValue }) {
+  const [value, setValue] = useState(prevValue || '');
   const [selectedValue, setSelectedValue] = useState(null);
 
   return (

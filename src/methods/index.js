@@ -47,3 +47,7 @@ export function getRandomColor() {
   }
   return color;
 }
+
+export function removeDuplicates(data, key) {
+  return [...new Map(data.map(item => [key(item), item])).values()];
+}

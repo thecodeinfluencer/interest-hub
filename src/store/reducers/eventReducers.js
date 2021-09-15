@@ -12,10 +12,9 @@ export default function eventsReducer(state = initialState, action) {
       return { ...state, list: action.info, err: null };
     case 'LOAD_ATTENDEES_LIST': {
       const { memberList, eventID } = action.update;
-      const state1 = { ...state };
-      const state2 = state1;
+      const state1 = state;
 
-      const list = state2.list.map(event => {
+      const list = state1.list.map(event => {
         let event2 = event;
 
         if (event.id == eventID) {

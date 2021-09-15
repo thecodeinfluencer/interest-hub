@@ -4,9 +4,12 @@ import ListEmpty from './components/fragments/ListEmpty';
 import SelectInterests from './components/fragments/SelectInterests';
 import CreateEventScreen from './screens/CreateEventScreen';
 import CreateGroupScreen from './screens/CreateGroupScreen';
+import EditEventScreen from './screens/EditEventScreen';
+import EditGroupScreen from './screens/EditGroupScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import EventPeopleScreen from './screens/EventPeopleScreen';
 import EventRouteScreen from './screens/EventRouteScreen';
+import GroupAddMembersScreen from './screens/GroupAddMembersScreen';
 import GroupChatReplyScreen from './screens/GroupChatReplyScreen';
 import GroupChatScreen from './screens/GroupChatScreen';
 import GroupMembersScreen from './screens/GroupMembersScreen';
@@ -37,7 +40,11 @@ export default function Routes() {
         <Route path='/profile' exact component={ProfileScreen} />
         <Route path='/profile/edit' exact component={EditProfileScreen} />
         <Route path='/create/group' exact component={CreateGroupScreen} />
-        <Route path='/create/event' exact component={CreateEventScreen} />
+        <Route
+          path='/create/event/:groupID'
+          exact
+          component={CreateEventScreen}
+        />
 
         {/* Sub Routes */}
         <Route path='/people/:id' exact component={UserAccountScreen} />
@@ -50,6 +57,8 @@ export default function Routes() {
           exact
           component={GroupMembersScreen}
         />
+        <Route path='/groups/:id/add' exact component={GroupAddMembersScreen} />
+        <Route path='/groups/:id/edit' exact component={EditGroupScreen} />
         {/*  */}
         <Route
           path='/groups/:id/chats/:chatId'
@@ -66,6 +75,11 @@ export default function Routes() {
           path='/groups/:id/events/:eventId/people'
           exact
           component={EventPeopleScreen}
+        />
+        <Route
+          path='/groups/:id/events/:eventId/edit'
+          exact
+          component={EditEventScreen}
         />
 
         {/* App Flow and Auth */}

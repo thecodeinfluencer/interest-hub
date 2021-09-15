@@ -1,10 +1,12 @@
 import {
   Avatar,
   Card,
+  Chip,
   Grid,
   List,
   ListItem,
   ListItemAvatar,
+  ListItemSecondaryAction,
   ListItemText,
 } from '@material-ui/core';
 import React from 'react';
@@ -47,11 +49,11 @@ export default function GroupMembersScreen() {
                   )
                 )}
               />
-              {/* <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete">
-                  <ChevronRight />
-                </IconButton>
-              </ListItemSecondaryAction> */}
+              <ListItemSecondaryAction>
+                {person.admin && (
+                  <Chip color='primary' label='Admin' size='small' />
+                )}
+              </ListItemSecondaryAction>
             </ListItem>
           ))}
         </List>
