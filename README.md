@@ -1,4 +1,6 @@
-# kanisa-react-pwa
+# Interest Hub
+
+An app to connect people who share interests and live close to one another!
 
 ### Setup
 - Run `npm install` on root of project to install the dependancies
