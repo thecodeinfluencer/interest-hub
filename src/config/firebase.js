@@ -6,13 +6,13 @@ import 'firebase/storage';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: 'AIzaSyCRmNEkLF4wvO-N4_KBzW1py1p0z4Az5x0',
-  authDomain: 'interest-hub.firebaseapp.com',
-  projectId: 'interest-hub',
-  storageBucket: 'interest-hub.appspot.com',
-  messagingSenderId: '999733536711',
-  appId: '1:999733536711:web:8934106138dc7b1b2f5be2',
-  measurementId: 'G-XWYNENMHJS',
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
+  measurementId: '',
 };
 
 firebase.initializeApp(firebaseConfig);
