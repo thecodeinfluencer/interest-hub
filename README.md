@@ -1,4 +1,4 @@
-# Interest Hub
+# interest-hub
 
 An app to connect people who share interests and live close to one another!
 
